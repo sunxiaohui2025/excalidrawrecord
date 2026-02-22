@@ -394,6 +394,9 @@ const ExcalidrawWrapper = () => {
   const [cameraSize, setCameraSize] = useState(200);
   const [showCursor, setShowCursor] = useState(true);
   const [cursorColor, setCursorColor] = useState("#f03e3e");
+  const [recordingMode, setRecordingMode] = useState<"screen" | "canvas">(
+    "canvas",
+  );
 
   const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
 
@@ -446,6 +449,8 @@ const ExcalidrawWrapper = () => {
     padding,
     showCursor,
     cameraStream,
+    recordingMode,
+    cursorColor,
   });
 
   const [langCode, setLangCode] = useAppLangCode();
@@ -1024,6 +1029,8 @@ const ExcalidrawWrapper = () => {
             setCameraPosition={setCameraPosition}
             cameraSize={cameraSize}
             setCameraSize={setCameraSize}
+            recordingMode={recordingMode}
+            setRecordingMode={setRecordingMode}
           />
         )}
 

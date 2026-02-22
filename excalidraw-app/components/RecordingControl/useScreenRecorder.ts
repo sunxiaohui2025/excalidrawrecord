@@ -9,6 +9,8 @@ interface UseScreenRecorderProps {
   padding?: number;
   showCursor?: boolean;
   cameraStream?: MediaStream | null;
+  recordingMode?: "screen" | "canvas"; // 'screen' = getDisplayMedia, 'canvas' = DOM canvas capture
+  cursorColor?: string;
 }
 
 export const useScreenRecorder = ({
@@ -20,6 +22,8 @@ export const useScreenRecorder = ({
   padding = 20,
   showCursor = true,
   cameraStream: externalCameraStream = null,
+  recordingMode = "screen",
+  cursorColor = "#f03e3e",
 }: UseScreenRecorderProps = {}) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -41,6 +45,16 @@ export const useScreenRecorder = ({
     canvas: MediaStream | null;
     audio: MediaStream | null;
   }>({ display: null, camera: null, canvas: null, audio: null });
+
+  const mousePosRef = useRef({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      mousePosRef.current = { x: e.clientX, y: e.clientY };
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
 
   const startTimer = useCallback(() => {
     timerRef.current = window.setInterval(() => {
@@ -90,26 +104,32 @@ export const useScreenRecorder = ({
       let displayStream = streamsRef.current.display;
       let isStreamReused = false;
 
-      // Check if we can reuse the existing display stream
-      // Check if active and has live tracks
-      if (
-        displayStream &&
-        displayStream.active &&
-        displayStream.getTracks().some((t) => t.readyState === "live")
-      ) {
-        isStreamReused = true;
-      } else {
-        // 1. Get Display Stream
-        displayStream = await navigator.mediaDevices.getDisplayMedia({
-          video: {
-            displaySurface: "browser",
-            cursor: showCursor ? "always" : "never",
-            selfBrowserSurface: "include",
-            surfaceSwitching: "include",
-            preferCurrentTab: true,
-          } as MediaTrackConstraints | any,
-          audio: true,
-        });
+      if (recordingMode === "screen") {
+        // Check if we can reuse the existing display stream
+        if (
+          displayStream &&
+          displayStream.active &&
+          displayStream.getTracks().some((t) => t.readyState === "live")
+        ) {
+          isStreamReused = true;
+        } else {
+          // 1. Get Display Stream
+          displayStream = await navigator.mediaDevices.getDisplayMedia({
+            video: {
+              displaySurface: "browser",
+              cursor: showCursor ? "always" : "never",
+              selfBrowserSurface: "include",
+              surfaceSwitching: "include",
+              preferCurrentTab: true,
+              monitorTypeSurfaces: "exclude",
+            } as MediaTrackConstraints | any,
+            audio: {
+              echoCancellation: true,
+              noiseSuppression: true,
+              autoGainControl: true,
+            },
+          });
+        }
       }
 
       // 2. Get Camera Stream (if needed)
@@ -167,8 +187,10 @@ export const useScreenRecorder = ({
         // Prepare video elements
         const screenVideo = document.createElement("video");
         screenVideo.muted = true;
-        screenVideo.srcObject = displayStream;
-        await screenVideo.play();
+        if (displayStream) {
+          screenVideo.srcObject = displayStream;
+          await screenVideo.play();
+        }
 
         let cameraVideo: HTMLVideoElement | null = null;
         if (cameraStream) {
@@ -181,7 +203,10 @@ export const useScreenRecorder = ({
         videoElementsRef.current = { screen: screenVideo, camera: cameraVideo };
       } else {
         // Ensure srcObjects are correct if we reused elements
-        if (videoElementsRef.current.screen.srcObject !== displayStream) {
+        if (
+          displayStream &&
+          videoElementsRef.current.screen.srcObject !== displayStream
+        ) {
           videoElementsRef.current.screen.srcObject = displayStream;
           await videoElementsRef.current.screen.play();
         }
@@ -205,11 +230,22 @@ export const useScreenRecorder = ({
       const ctx = canvas.getContext("2d");
 
       // Calculate dimensions based on aspect ratio
-      const settings = displayStream!.getVideoTracks()[0].getSettings();
-      const sw =
-        screenVideo.videoWidth || settings.width || window.screen.width;
-      const sh =
-        screenVideo.videoHeight || settings.height || window.screen.height;
+      let sw = window.screen.width;
+      let sh = window.screen.height;
+
+      if (recordingMode === "canvas") {
+        const appCanvas = document.querySelector(
+          ".excalidraw canvas",
+        ) as HTMLCanvasElement;
+        if (appCanvas) {
+          sw = appCanvas.width;
+          sh = appCanvas.height;
+        }
+      } else if (displayStream) {
+        const settings = displayStream.getVideoTracks()[0].getSettings();
+        sw = screenVideo.videoWidth || settings.width || window.screen.width;
+        sh = screenVideo.videoHeight || settings.height || window.screen.height;
+      }
 
       let targetRatio = 16 / 9;
       if (aspectRatio && aspectRatio !== "custom") {
@@ -245,26 +281,128 @@ export const useScreenRecorder = ({
             return;
           }
 
-          // Clear
-          ctx.fillStyle = "#000";
-          ctx.fillRect(0, 0, cw, ch);
+          // Clear with background color
+          let bgColor = "#ffffff";
 
-          const vSw = screenVideo.videoWidth || sw;
-          const vSh = screenVideo.videoHeight || sh;
+          if (recordingMode === "canvas") {
+            // Find all canvases in excalidraw container and draw them
+            const container = document.querySelector(".excalidraw");
+            let srcRect = { x: 0, y: 0, w: cw, h: ch }; // Default fallback
 
-          let srcW = vSw;
-          let srcH = vSh;
+            if (container) {
+              // Try to get background color from container
+              const computedStyle = window.getComputedStyle(container);
+              if (
+                computedStyle.backgroundColor &&
+                computedStyle.backgroundColor !== "rgba(0, 0, 0, 0)" &&
+                computedStyle.backgroundColor !== "transparent"
+              ) {
+                bgColor = computedStyle.backgroundColor;
+              }
 
-          if (srcW / srcH > targetRatio) {
-            srcW = srcH * targetRatio;
+              ctx.fillStyle = bgColor;
+              ctx.fillRect(0, 0, cw, ch);
+
+              const canvases = container.querySelectorAll("canvas");
+              let scaleX = 1;
+              let scaleY = 1;
+              let cRect = { left: 0, top: 0, width: cw, height: ch };
+
+              if (canvases.length > 0) {
+                // Calculate crop based on first canvas (assume all same size)
+                const c0 = canvases[0];
+                const cSw = c0.width;
+                const cSh = c0.height;
+
+                // Calculate scale factor for cursor mapping
+                const rect = c0.getBoundingClientRect();
+                cRect = rect;
+                scaleX = cSw / rect.width;
+                scaleY = cSh / rect.height;
+
+                let srcW = cSw;
+                let srcH = cSh;
+
+                if (srcW / srcH > targetRatio) {
+                  srcW = srcH * targetRatio;
+                } else {
+                  srcH = srcW / targetRatio;
+                }
+
+                srcRect = {
+                  x: (cSw - srcW) / 2,
+                  y: (cSh - srcH) / 2,
+                  w: srcW,
+                  h: srcH,
+                };
+              }
+
+              canvases.forEach((c) => {
+                ctx.drawImage(
+                  c,
+                  srcRect.x,
+                  srcRect.y,
+                  srcRect.w,
+                  srcRect.h,
+                  0,
+                  0,
+                  cw,
+                  ch,
+                );
+              });
+
+              if (showCursor) {
+                const { x: clientX, y: clientY } = mousePosRef.current;
+
+                // Map Client Mouse to Canvas Element relative position
+                const relX = clientX - cRect.left;
+                const relY = clientY - cRect.top;
+
+                // Map to Internal Canvas pixels
+                const sx = relX * scaleX;
+                const sy = relY * scaleY;
+
+                // Map Source Canvas pixels to Destination Canvas pixels
+                const destX = (sx - srcRect.x) * (cw / srcRect.w);
+                const destY = (sy - srcRect.y) * (ch / srcRect.h);
+
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(destX, destY, 10, 0, Math.PI * 2);
+                ctx.fillStyle = `${cursorColor}80`; // add transparency
+                ctx.fill();
+                ctx.strokeStyle = "white";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                ctx.restore();
+              }
+            } else {
+              // Fallback if container not found
+              ctx.fillStyle = "#000";
+              ctx.fillRect(0, 0, cw, ch);
+            }
           } else {
-            srcH = srcW / targetRatio;
+            // Screen mode
+            ctx.fillStyle = "#000";
+            ctx.fillRect(0, 0, cw, ch);
+
+            const vSw = screenVideo.videoWidth || sw;
+            const vSh = screenVideo.videoHeight || sh;
+
+            let srcW = vSw;
+            let srcH = vSh;
+
+            if (srcW / srcH > targetRatio) {
+              srcW = srcH * targetRatio;
+            } else {
+              srcH = srcW / targetRatio;
+            }
+
+            const srcX = (vSw - srcW) / 2;
+            const srcY = (vSh - srcH) / 2;
+
+            ctx.drawImage(screenVideo, srcX, srcY, srcW, srcH, 0, 0, cw, ch);
           }
-
-          const srcX = (vSw - srcW) / 2;
-          const srcY = (vSh - srcH) / 2;
-
-          ctx.drawImage(screenVideo, srcX, srcY, srcW, srcH, 0, 0, cw, ch);
 
           if (cameraVideo && cameraVideo.videoWidth) {
             const camSize = cameraSize;
@@ -337,9 +475,11 @@ export const useScreenRecorder = ({
 
       // 7. Combine Audio
       const tracks = [...canvasStream.getTracks()];
-      const displayAudioTracks = displayStream!.getAudioTracks();
-      if (displayAudioTracks.length > 0) {
-        tracks.push(...displayAudioTracks);
+      if (displayStream) {
+        const displayAudioTracks = displayStream.getAudioTracks();
+        if (displayAudioTracks.length > 0) {
+          tracks.push(...displayAudioTracks);
+        }
       }
       if (audioStream) {
         tracks.push(...audioStream.getAudioTracks());
@@ -394,7 +534,6 @@ export const useScreenRecorder = ({
       // Only attach listener if it's a new stream to avoid duplicate listeners
       if (!isStreamReused && displayStream) {
         displayStream.getVideoTracks()[0].onended = () => {
-          // If the user manually stops sharing, we should stop recording AND cleanup
           if (
             mediaRecorderRef.current &&
             mediaRecorderRef.current.state !== "inactive"
@@ -404,22 +543,24 @@ export const useScreenRecorder = ({
           cleanup();
         };
       }
-    } catch (err) {
-      console.error("Error starting recording:", err);
+    } catch (error) {
+      console.error("Error starting recording:", error);
       setIsRecording(false);
     }
   }, [
-    onStop,
     aspectRatio,
     showCamera,
     cameraPosition,
     cameraSize,
     padding,
     showCursor,
-    cleanup,
+    externalCameraStream,
+    onStop,
     startTimer,
     stopTimer,
-    externalCameraStream,
+    cleanup,
+    recordingMode,
+    cursorColor,
   ]);
 
   const stopRecording = useCallback(() => {

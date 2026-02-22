@@ -26,6 +26,8 @@ interface SettingsPanelProps {
   ) => void;
   cameraSize: number;
   setCameraSize: (size: number) => void;
+  recordingMode: "screen" | "canvas";
+  setRecordingMode: (mode: "screen" | "canvas") => void;
 }
 
 const ASPECT_RATIOS = [
@@ -150,6 +152,8 @@ export const SettingsPanel = ({
   setCameraPosition,
   cameraSize,
   setCameraSize,
+  recordingMode,
+  setRecordingMode,
 }: SettingsPanelProps) => {
   const [bgFilter, setBgFilter] = useState("all");
 
@@ -233,6 +237,35 @@ export const SettingsPanel = ({
           </div>
 
           <div className="controls-content">
+            <div className="control-group">
+              <label>录制模式</label>
+              <div className="switch-row">
+                <div className="mode-toggle">
+                  <button
+                    className={clsx("mode-btn", {
+                      active: recordingMode === "screen",
+                    })}
+                    onClick={() => setRecordingMode("screen")}
+                  >
+                    屏幕录制
+                  </button>
+                  <button
+                    className={clsx("mode-btn", {
+                      active: recordingMode === "canvas",
+                    })}
+                    onClick={() => setRecordingMode("canvas")}
+                  >
+                    画布录制 (无弹窗)
+                  </button>
+                </div>
+              </div>
+              <p className="control-hint">
+                {recordingMode === "screen"
+                  ? "需要选择录制区域，支持录制整个浏览器窗口。"
+                  : "直接录制画布区域，无需选择，体验更流畅。"}
+              </p>
+            </div>
+
             <div className="control-group">
               <label>画面比例</label>
               <div className="ratio-grid">

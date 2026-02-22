@@ -82,7 +82,7 @@
       &.stop-btn {
         background: #fff1f0;
         color: #ff4d4f;
-        
+
         &:hover {
           background: #ffccc7;
         }
@@ -105,7 +105,7 @@
         height: 8px;
         border-radius: 50%;
         background-color: #ff4d4f;
-        
+
         &:not(.paused) {
           animation: blink 1s infinite;
         }
