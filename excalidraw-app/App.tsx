@@ -1,9 +1,8 @@
 import {
   Excalidraw,
-  LiveCollaborationTrigger,
   CaptureUpdateAction,
   reconcileElements,
-  useEditorInterface,
+  // useEditorInterface,
 } from "@excalidraw/excalidraw";
 import { trackEvent } from "@excalidraw/excalidraw/analytics";
 import { getDefaultAppState } from "@excalidraw/excalidraw/appState";
@@ -375,7 +374,7 @@ const ExcalidrawWrapper = () => {
 
   const [langCode, setLangCode] = useAppLangCode();
 
-  const editorInterface = useEditorInterface();
+  // const editorInterface = useEditorInterface();
 
   // initial state
   // ---------------------------------------------------------------------------
@@ -902,13 +901,7 @@ const ExcalidrawWrapper = () => {
               )}
 
               {collabError.message && <CollabError collabError={collabError} />}
-              <LiveCollaborationTrigger
-                isCollaborating={isCollaborating}
-                onSelect={() =>
-                  setShareDialogState({ isOpen: true, type: "share" })
-                }
-                editorInterface={editorInterface}
-              />
+              {/* LiveCollaborationTrigger removed */}
             </div>
           );
         }}
