@@ -1,0 +1,144 @@
+.recording-control-menu {
+  position: absolute;
+  background-color: var(--island-bg-color);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 8px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  z-index: 2005; /* Higher than CameraOverlay */
+  cursor: grab;
+  user-select: none;
+  font-family: var(--ui-font);
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  .control-btn {
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    padding: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary-color);
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: var(--button-hover-bg);
+    }
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    &.record-btn {
+      background-color: #ff4d4f;
+      color: white;
+      font-weight: 600;
+      padding: 8px 16px;
+      gap: 6px;
+      border-radius: 20px;
+
+      &:hover {
+        background-color: #ff7875;
+      }
+
+      &.recording {
+        animation: pulse 2s infinite;
+      }
+    }
+  }
+
+  &.recording-mode {
+    background-color: #fff;
+    padding: 8px 16px;
+    border-radius: 40px; /* Pill shape */
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+    .control-btn {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      border-radius: 50%;
+      background: #f0f0f0;
+      color: #333;
+
+      &:hover {
+        background: #e0e0e0;
+      }
+
+      &.active {
+        background: #e6f7ff;
+        color: #1890ff;
+      }
+
+      &.stop-btn {
+        background: #fff1f0;
+        color: #ff4d4f;
+        
+        &:hover {
+          background: #ffccc7;
+        }
+      }
+    }
+
+    .timer-display {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-feature-settings: "tnum";
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+      font-size: 14px;
+      color: #333;
+      margin-right: 8px;
+
+      .recording-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: #ff4d4f;
+        
+        &:not(.paused) {
+          animation: blink 1s infinite;
+        }
+
+        &.paused {
+          background-color: #faad14;
+        }
+      }
+    }
+
+    .divider {
+      width: 1px;
+      height: 24px;
+      background-color: #e0e0e0;
+      margin: 0 4px;
+    }
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 77, 79, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 77, 79, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 77, 79, 0);
+  }
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.5;
+  }
+}

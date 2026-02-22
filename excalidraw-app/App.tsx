@@ -98,6 +98,12 @@ import Collab, {
 import { AppFooter } from "./components/AppFooter";
 import { AppMainMenu } from "./components/AppMainMenu";
 import { AppWelcomeScreen } from "./components/AppWelcomeScreen";
+import { ControlMenu } from "./components/RecordingControl/ControlMenu";
+import { CameraOverlay } from "./components/RecordingControl/CameraOverlay";
+import { SettingsPanel } from "./components/RecordingControl/SettingsPanel";
+import { TeleprompterPanel } from "./components/RecordingControl/TeleprompterPanel";
+import { SlideshowPanel } from "./components/RecordingControl/SlideshowPanel";
+import { useScreenRecorder } from "./components/RecordingControl/useScreenRecorder";
 import {
   ExportToExcalidrawPlus,
   exportToExcalidrawPlus,
@@ -371,6 +377,76 @@ const ExcalidrawWrapper = () => {
   const isCollabDisabled = isRunningInIframe();
 
   const { editorTheme, appTheme, setAppTheme } = useHandleAppTheme();
+
+  // Recording controls
+  const [showSettings, setShowSettings] = useState(false);
+  const [showTeleprompter, setShowTeleprompter] = useState(false);
+  const [aspectRatio, setAspectRatio] = useState("16/9");
+  const [background, setBackground] = useState(
+    "linear-gradient(135deg, #fce38a 0%, #f38181 100%)",
+  );
+  const [borderRadius, setBorderRadius] = useState(16);
+  const [padding, setPadding] = useState(60);
+  const [showCamera, setShowCamera] = useState(false);
+  const [cameraPosition, setCameraPosition] = useState<
+    "top-left" | "top-right" | "bottom-left" | "bottom-right"
+  >("bottom-right");
+  const [cameraSize, setCameraSize] = useState(200);
+  const [showCursor, setShowCursor] = useState(true);
+  const [cursorColor, setCursorColor] = useState("#f03e3e");
+
+  const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
+
+  useEffect(() => {
+    let activeStream: MediaStream | null = null;
+
+    const startCamera = async () => {
+      try {
+        const mediaStream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+            facingMode: "user",
+          },
+          audio: false,
+        });
+        activeStream = mediaStream;
+        setCameraStream(mediaStream);
+      } catch (err) {
+        console.error("Failed to access camera:", err);
+      }
+    };
+
+    if (showCamera) {
+      startCamera();
+    } else {
+      setCameraStream(null);
+    }
+
+    return () => {
+      if (activeStream) {
+        activeStream.getTracks().forEach((track) => track.stop());
+      }
+    };
+  }, [showCamera]);
+
+  const {
+    isRecording,
+    startRecording,
+    stopRecording,
+    isPaused,
+    recordingTime,
+    pauseRecording,
+    resumeRecording,
+  } = useScreenRecorder({
+    aspectRatio,
+    showCamera,
+    cameraPosition,
+    cameraSize,
+    padding,
+    showCursor,
+    cameraStream,
+  });
 
   const [langCode, setLangCode] = useAppLangCode();
 
@@ -912,6 +988,58 @@ const ExcalidrawWrapper = () => {
           }
         }}
       >
+        {/* Recording Controls */}
+        <ControlMenu
+          onSettingsClick={() => setShowSettings(true)}
+          onTeleprompterClick={() => setShowTeleprompter(!showTeleprompter)}
+          onRecordClick={isRecording ? stopRecording : startRecording}
+          isRecording={isRecording}
+          isPaused={isPaused}
+          recordingTime={recordingTime}
+          onPauseClick={isPaused ? resumeRecording : pauseRecording}
+          onStopClick={stopRecording}
+          showCursor={showCursor}
+          onToggleCursor={() => setShowCursor(!showCursor)}
+          showTeleprompter={showTeleprompter}
+        />
+
+        {showSettings && (
+          <SettingsPanel
+            onClose={() => setShowSettings(false)}
+            aspectRatio={aspectRatio}
+            setAspectRatio={setAspectRatio}
+            background={background}
+            setBackground={setBackground}
+            borderRadius={borderRadius}
+            setBorderRadius={setBorderRadius}
+            padding={padding}
+            setPadding={setPadding}
+            showCamera={showCamera}
+            setShowCamera={setShowCamera}
+            showCursor={showCursor}
+            setShowCursor={setShowCursor}
+            cursorColor={cursorColor}
+            setCursorColor={setCursorColor}
+            cameraPosition={cameraPosition}
+            setCameraPosition={setCameraPosition}
+            cameraSize={cameraSize}
+            setCameraSize={setCameraSize}
+          />
+        )}
+
+        <CameraOverlay
+          visible={showCamera}
+          position={cameraPosition}
+          defaultSize={cameraSize}
+          stream={cameraStream}
+        />
+
+        {showTeleprompter && (
+          <TeleprompterPanel onClose={() => setShowTeleprompter(false)} />
+        )}
+
+        <SlideshowPanel />
+
         <AppMainMenu
           onCollabDialogOpen={onCollabDialogOpen}
           isCollaborating={isCollaborating}
