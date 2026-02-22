@@ -1,8 +1,22 @@
 export const ExcalidrawPlusPromoBanner = ({
   isSignedIn,
+  onClick,
 }: {
   isSignedIn: boolean;
+  onClick?: () => void;
 }) => {
+  if (onClick) {
+    return (
+      <div
+        className="plus-banner"
+        onClick={onClick}
+        style={{ cursor: "pointer" }}
+      >
+        Excalidraw+
+      </div>
+    );
+  }
+
   return (
     <a
       href={

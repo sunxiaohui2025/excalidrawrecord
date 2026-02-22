@@ -1,7 +1,6 @@
 import {
   Excalidraw,
   LiveCollaborationTrigger,
-  TTDDialogTrigger,
   CaptureUpdateAction,
   reconcileElements,
   useEditorInterface,
@@ -892,6 +891,13 @@ const ExcalidrawWrapper = () => {
               {excalidrawAPI?.getEditorInterface().formFactor === "desktop" && (
                 <ExcalidrawPlusPromoBanner
                   isSignedIn={isExcalidrawPlusSignedUser}
+                  onClick={() => {
+                    excalidrawAPI?.updateScene({
+                      appState: {
+                        openDialog: { name: "ttd", tab: "text-to-diagram" },
+                      },
+                    });
+                  }}
                 />
               )}
 
@@ -947,8 +953,6 @@ const ExcalidrawWrapper = () => {
         </OverwriteConfirmDialog>
         <AppFooter onChange={() => excalidrawAPI?.refresh()} />
         {excalidrawAPI && <AIComponents excalidrawAPI={excalidrawAPI} />}
-
-        <TTDDialogTrigger />
         {isCollaborating && isOffline && (
           <div className="alertalert--warning">
             {t("alerts.collabOfflineWarning")}

@@ -49,10 +49,10 @@ export const AIComponents = ({
             );
           }
 
-          const systemPrompt = `You are an expert web developer who specializes in HTML and CSS.
-Your task is to convert the provided wireframe image into a single HTML file using Tailwind CSS.
-Return ONLY the HTML code. Do not include any explanations.
-If you return markdown, wrap the HTML in \`\`\`html code blocks.`;
+          const systemPrompt = `你是一位精通 HTML 和 CSS 的 Web 开发专家。
+你的任务是将提供的线框图转换为使用 Tailwind CSS 的单个 HTML 文件。
+仅返回 HTML 代码。不要包含任何解释。
+如果返回 Markdown，请将 HTML 包裹在 \`\`\`html 代码块中。`;
 
           const response = await fetch(`${baseUrl}/chat/completions`, {
             method: "POST",
