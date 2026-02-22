@@ -17,6 +17,8 @@ interface StreamingOptions {
   extractRateLimits?: boolean;
   signal?: AbortSignal;
   onStreamCreated?: () => void;
+  headers?: Record<string, string>;
+  model?: string;
 }
 
 export type StreamChunk =
@@ -94,6 +96,8 @@ export async function TTDStreamFetch(
     onStreamCreated,
     extractRateLimits = true,
     signal,
+    headers = {},
+    model,
   } = options;
 
   try {
@@ -101,13 +105,18 @@ export async function TTDStreamFetch(
     let rateLimitInfo: RateLimitInfo = {};
     let error: RequestError | null = null;
 
+    const body = model
+      ? JSON.stringify({ model, messages, stream: true })
+      : JSON.stringify({ messages });
+
     const response = await fetch(url, {
       method: "POST",
       headers: {
         Accept: "text/event-stream",
         "Content-Type": "application/json",
+        ...headers,
       },
-      body: JSON.stringify({ messages }),
+      body,
       signal,
     });
 
@@ -151,12 +160,24 @@ export async function TTDStreamFetch(
         }
 
         try {
-          const chunk: StreamChunk = JSON.parse(data);
+          const chunk = JSON.parse(data);
 
           if (chunk === null) {
             break;
           }
 
+          // Handle OpenAI compatible format
+          if (chunk.choices && Array.isArray(chunk.choices)) {
+            const choice = chunk.choices[0];
+            if (choice?.delta?.content) {
+              const delta = choice.delta.content;
+              fullResponse += delta;
+              onChunk?.(delta);
+            }
+            continue;
+          }
+
+          // Handle Excalidraw backend format
           switch (chunk.type) {
             case "content": {
               const delta = chunk.delta;

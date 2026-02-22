@@ -96,19 +96,19 @@ const TTDDialogBase = withInternalFallback(
           {"__fallback" in rest && rest.__fallback ? (
             <p className="dialog-mermaid-title">{t("mermaid.title")}</p>
           ) : (
-            <TTDDialogTabTriggers>
-              <TTDDialogTabTrigger tab="text-to-diagram">
-                <div className="ttd-dialog-tab-trigger__content">
+            <>
+              <TTDDialogTabTriggers>
+                <TTDDialogTabTrigger tab="text-to-diagram">
                   {t("labels.textToDiagram")}
-                  <div className="ttd-dialog-tab-trigger__badge">
-                    {t("chat.aiBeta")}
-                  </div>
-                </div>
-              </TTDDialogTabTrigger>
-              <TTDDialogTabTrigger tab="mermaid">
-                {t("mermaid.label")}
-              </TTDDialogTabTrigger>
-            </TTDDialogTabTriggers>
+                </TTDDialogTabTrigger>
+                <TTDDialogTabTrigger tab="mermaid">Mermaid</TTDDialogTabTrigger>
+              </TTDDialogTabTriggers>
+              <div className="ttd-dialog-desc">
+                {tab === "text-to-diagram"
+                  ? "输入描述，AI 自动生成图表。例如：生成一个用户登录流程图"
+                  : "直接粘贴 Mermaid 代码生成图表"}
+              </div>
+            </>
           )}
 
           {!("__fallback" in rest) && (

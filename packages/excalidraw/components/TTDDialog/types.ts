@@ -9,7 +9,7 @@ import type { MermaidToExcalidrawResult } from "@excalidraw/mermaid-to-excalidra
 import type { BinaryFiles } from "../../types";
 
 export type LLMMessage = {
-  role: "user" | "assistant";
+  role: "user" | "assistant" | "system";
   content: string;
 };
 
