@@ -526,6 +526,15 @@ const ExcalidrawWrapper = () => {
   const [excalidrawAPI, excalidrawRefCallback] =
     useCallbackRefState<ExcalidrawImperativeAPI>();
 
+  const focusExcalidrawContainer = useCallback(() => {
+    const container = document.querySelector(
+      ".excalidraw-container",
+    ) as HTMLDivElement;
+    if (container) {
+      container.focus();
+    }
+  }, []);
+
   // Sync canvas background color
   useEffect(() => {
     if (!excalidrawAPI || !useCanvasBackground) {
@@ -1086,7 +1095,10 @@ const ExcalidrawWrapper = () => {
 
         {showSettings && (
           <SettingsPanel
-            onClose={() => setShowSettings(false)}
+            onClose={() => {
+              setShowSettings(false);
+              focusExcalidrawContainer();
+            }}
             aspectRatio={aspectRatio}
             setAspectRatio={setAspectRatio}
             background={background}
@@ -1144,7 +1156,12 @@ const ExcalidrawWrapper = () => {
         />
 
         {showTeleprompter && (
-          <TeleprompterPanel onClose={() => setShowTeleprompter(false)} />
+          <TeleprompterPanel
+            onClose={() => {
+              setShowTeleprompter(false);
+              focusExcalidrawContainer();
+            }}
+          />
         )}
 
         <SlideshowPanel
