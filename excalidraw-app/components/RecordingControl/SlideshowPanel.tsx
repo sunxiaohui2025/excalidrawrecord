@@ -78,6 +78,7 @@ export const SlideshowPanel = ({
 
       const appState = excalidrawAPI.getAppState();
       const { width, height } = dimensions;
+      const zoom = appState.zoom.value;
 
       // 计算位置 - 在现有幻灯片右侧横向排列
       const existingSlides = slides.length;
@@ -92,8 +93,12 @@ export const SlideshowPanel = ({
         y = basePositionRef.current.y;
       } else {
         // 第一个幻灯片：基于当前视口中心
-        x = appState.scrollX + (appState.width - width) / 2;
-        y = appState.scrollY + (appState.height - height) / 2;
+        // 视口中心在屏幕坐标系中是 (width/2, height/2)
+        // 需要转换回画布坐标系：canvasCoord = (screenCoord / zoom) - scroll
+        const viewportCenterX = appState.width / 2;
+        const viewportCenterY = appState.height / 2;
+        x = viewportCenterX / zoom - appState.scrollX - width / 2;
+        y = viewportCenterY / zoom - appState.scrollY - height / 2;
         // 保存基准位置
         basePositionRef.current = { x, y };
       }
@@ -316,25 +321,24 @@ export const SlideshowPanel = ({
       const newSlides = slides.filter((s) => s.id !== slideId);
       setSlides(newSlides);
 
-      if (activeSlide === slideId) {
-        const newActiveId = newSlides[0]?.id;
-        if (newActiveId) {
-          const newActiveSlide = newSlides.find((s) => s.id === newActiveId);
-          if (newActiveSlide) {
-            if (isRecording) {
-              switchToSlide(newActiveId);
-            } else {
-              scrollToSlide(newActiveId, newActiveSlide.elementId);
-            }
+      // 如果所有幻灯片都被删除了，重置基准位置
+      if (newSlides.length === 0) {
+        setActiveSlide(null);
+        if (onSlideChange) {
+          onSlideChange(null);
+        }
+        // 重置基准位置，下次创建时重新计算
+        basePositionRef.current = null;
+      } else if (activeSlide === slideId) {
+        // 如果删除的是当前激活的幻灯片，切换到第一个
+        const newActiveId = newSlides[0].id;
+        const newActiveSlide = newSlides.find((s) => s.id === newActiveId);
+        if (newActiveSlide) {
+          if (isRecording) {
+            switchToSlide(newActiveId);
+          } else {
+            scrollToSlide(newActiveId, newActiveSlide.elementId);
           }
-        } else {
-          // 所有幻灯片都被删除了
-          setActiveSlide(null);
-          if (onSlideChange) {
-            onSlideChange(null);
-          }
-          // 重置基准位置，下次创建时重新计算
-          basePositionRef.current = null;
         }
       }
     },
@@ -372,20 +376,19 @@ export const SlideshowPanel = ({
         const newSlides = slides.filter((s) => !deletedSlideIds.includes(s.id));
         setSlides(newSlides);
 
-        // 如果当前激活的幻灯片被删除了，切换到第一个
-        if (activeSlide && deletedSlideIds.includes(activeSlide)) {
-          if (newSlides.length > 0) {
-            setActiveSlide(newSlides[0].id);
-            if (onSlideChange) {
-              onSlideChange(newSlides[0].elementId);
-            }
-          } else {
-            setActiveSlide(null);
-            if (onSlideChange) {
-              onSlideChange(null);
-            }
-            // 重置基准位置，下次创建时重新计算
-            basePositionRef.current = null;
+        // 如果所有幻灯片都被删除了，重置基准位置
+        if (newSlides.length === 0) {
+          setActiveSlide(null);
+          if (onSlideChange) {
+            onSlideChange(null);
+          }
+          // 重置基准位置，下次创建时重新计算
+          basePositionRef.current = null;
+        } else if (activeSlide && deletedSlideIds.includes(activeSlide)) {
+          // 如果当前激活的幻灯片被删除了，切换到第一个
+          setActiveSlide(newSlides[0].id);
+          if (onSlideChange) {
+            onSlideChange(newSlides[0].elementId);
           }
         }
       }
