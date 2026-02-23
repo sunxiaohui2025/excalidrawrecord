@@ -15,6 +15,7 @@
   z-index: 5;
   font-family: var(--ui-font);
   transition: opacity 0.2s;
+  overflow: visible;
 
   &.switching {
     opacity: 0.7;
@@ -34,10 +35,12 @@
   .slides-container {
     flex: 1;
     overflow-y: auto;
+    overflow-x: visible;
     display: flex;
     flex-direction: column;
     gap: 4px;
-    padding-right: 2px;
+    padding-right: 8px;
+    margin-right: -6px;
 
     /* Custom Scrollbar */
     &::-webkit-scrollbar {
@@ -57,6 +60,7 @@
       position: relative;
       border-radius: 6px;
       transition: background-color 0.2s;
+      overflow: visible;
 
       &:hover {
         background-color: #e9ecef;
