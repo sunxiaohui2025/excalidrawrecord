@@ -183,7 +183,7 @@ export class ExcalidrawFontFace {
       }
 
       return `format('${parts.pop()}')`;
-    } catch (error) {
+    } catch {
       return "";
     }
   }

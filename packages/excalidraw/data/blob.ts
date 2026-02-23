@@ -372,7 +372,7 @@ export const ImageURLToFile = async (
   let response;
   try {
     response = await fetch(imageUrl);
-  } catch (error: any) {
+  } catch {
     throw new Error("Error: failed to fetch image", { cause: "FETCH_ERROR" });
   }
 

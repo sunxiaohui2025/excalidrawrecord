@@ -801,7 +801,7 @@ export const isPrimitive = (val: any) => {
 export const getFrame = () => {
   try {
     return window.self === window.top ? "top" : "iframe";
-  } catch (error) {
+  } catch {
     return "iframe";
   }
 };

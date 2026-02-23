@@ -86,7 +86,7 @@ export const isElementLink = (url: string) => {
       _url.searchParams.has(ELEMENT_LINK_KEY) &&
       _url.host === window.location.host
     );
-  } catch (error) {
+  } catch {
     return false;
   }
 };

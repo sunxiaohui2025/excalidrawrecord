@@ -817,7 +817,7 @@ class App extends React.Component<AppProps, AppState> {
     let data = null;
     try {
       data = JSON.parse(event.data);
-    } catch (e) {}
+    } catch {}
     if (!data) {
       return;
     }
@@ -2971,7 +2971,8 @@ class App extends React.Component<AppProps, AppState> {
       this.excalidrawContainerRef.current;
 
     if (isTestEnv() || isDevEnv()) {
-      const setState = this.setState.bind(this);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const _setState = this.setState.bind(this);
       Object.defineProperties(window.h, {
         state: {
           configurable: true,
@@ -2981,7 +2982,7 @@ class App extends React.Component<AppProps, AppState> {
         },
         setState: {
           configurable: true,
-          value: (...args: Parameters<typeof setState>) => {
+          value: (...args: Parameters<typeof _setState>) => {
             return this.setState(...args);
           },
         },
@@ -7689,7 +7690,7 @@ class App extends React.Component<AppProps, AppState> {
 
     let nextPastePrevented = false;
     const isLinux =
-      typeof window === undefined
+      typeof window === "undefined"
         ? false
         : /Linux/.test(window.navigator.platform);
 

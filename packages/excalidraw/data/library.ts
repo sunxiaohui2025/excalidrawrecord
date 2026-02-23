@@ -275,7 +275,7 @@ class Library {
         } else {
           resolve(cloneLibraryItems(libraryItems));
         }
-      } catch (error) {
+      } catch {
         return resolve(this.currLibraryItems);
       }
     });

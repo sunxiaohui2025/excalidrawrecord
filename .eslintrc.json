@@ -18,14 +18,6 @@
     ],
     "import/no-anonymous-default-export": "off",
     "no-restricted-globals": "off",
-    "@typescript-eslint/consistent-type-imports": [
-      "error",
-      {
-        "prefer": "type-imports",
-        "disallowTypeAnnotations": false,
-        "fixStyle": "separate-type-imports"
-      }
-    ],
     "no-restricted-imports": [
       "error",
       {
@@ -39,5 +31,20 @@
         "allowReferrer": true
       }
     ]
-  }
+  },
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx"],
+      "rules": {
+        "@typescript-eslint/consistent-type-imports": [
+          "error",
+          {
+            "prefer": "type-imports",
+            "disallowTypeAnnotations": false,
+            "fixStyle": "separate-type-imports"
+          }
+        ]
+      }
+    }
+  ]
 }
