@@ -383,7 +383,7 @@ const ExcalidrawWrapper = () => {
   // Recording controls
   const [showSettings, setShowSettings] = useState(false);
   const [showTeleprompter, setShowTeleprompter] = useState(false);
-  const [aspectRatio, setAspectRatio] = useState("16/9");
+  const [aspectRatio, setAspectRatio] = useState("3/4");
   const [background, setBackground] = useState(
     "linear-gradient(135deg, #fce38a 0%, #f38181 100%)",
   );

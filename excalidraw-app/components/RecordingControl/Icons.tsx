@@ -103,3 +103,35 @@ export const CursorIcon = createIcon(
   />,
   { ...tablerIconProps, width: 24, height: 24 },
 );
+
+export const ChevronDownIcon = createIcon(<path d="M6 9l6 6l6 -6" />, {
+  ...tablerIconProps,
+  width: 24,
+  height: 24,
+});
+
+export const ChevronUpIcon = createIcon(<path d="M6 15l6 -6l6 6" />, {
+  ...tablerIconProps,
+  width: 24,
+  height: 24,
+});
+
+export const VideoIcon = createIcon(
+  <path d="M15 10l4.553 -2.276a1 1 0 0 1 1.447 .894v6.764a1 1 0 0 1 -1.447 .894l-4.553 -2.276v-4zM3 8a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2v-8z" />,
+  { ...tablerIconProps, width: 24, height: 24 },
+);
+
+export const CameraIcon = createIcon(
+  <path d="M5 7h1a2 2 0 0 0 2 -2a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1a2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v9a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2M12 13a3 3 0 1 0 0 -6a3 3 0 0 0 0 6z" />,
+  { ...tablerIconProps, width: 24, height: 24 },
+);
+
+export const PaletteIcon = createIcon(
+  <path d="M12 21a9 9 0 0 1 0 -18c4.97 0 9 3.582 9 8c0 1.06 -.474 2.078 -1.318 2.828c-.844 .75 -1.989 1.172 -3.182 1.172h-2.5a2 2 0 0 0 -1 3.75a1.3 1.3 0 0 1 -1 2.25M12 7l0 .01M9 10l0 .01M15 10l0 .01M6 13l0 .01M18 13l0 .01" />,
+  { ...tablerIconProps, width: 24, height: 24 },
+);
+
+export const MousePointerIcon = createIcon(
+  <path d="M3 3l7.07 16.97l2.51 -7.39l7.39 -2.51l-16.97 -7.07z" />,
+  { ...tablerIconProps, width: 24, height: 24 },
+);

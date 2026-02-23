@@ -1,7 +1,16 @@
 import React, { useState } from "react";
 import clsx from "clsx";
 
-import { CloseIcon, CheckIcon } from "./Icons";
+import {
+  CloseIcon,
+  CheckIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  VideoIcon,
+  CameraIcon,
+  PaletteIcon,
+  MousePointerIcon,
+} from "./Icons";
 import "./SettingsPanel.scss";
 
 interface SettingsPanelProps {
@@ -123,14 +132,45 @@ const BACKGROUNDS = [
 ];
 
 const CURSOR_COLORS = [
-  "#e03131", // red
-  "#fd7e14", // orange
-  "#fcc419", // yellow
-  "#2f9e44", // green
-  "#228be6", // blue
-  "#7950f2", // violet
-  "#e64980", // pink
+  "#e03131",
+  "#fd7e14",
+  "#fcc419",
+  "#2f9e44",
+  "#228be6",
+  "#7950f2",
+  "#e64980",
 ];
+
+interface CollapsibleSectionProps {
+  title: string;
+  icon: React.ReactNode;
+  isOpen: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+}
+
+const CollapsibleSection = ({
+  title,
+  icon,
+  isOpen,
+  onToggle,
+  children,
+}: CollapsibleSectionProps) => {
+  return (
+    <div className={clsx("collapsible-section", { open: isOpen })}>
+      <button className="section-header" onClick={onToggle}>
+        <div className="section-title">
+          <span className="section-icon">{icon}</span>
+          <span>{title}</span>
+        </div>
+        <span className="section-toggle">
+          {isOpen ? ChevronUpIcon : ChevronDownIcon}
+        </span>
+      </button>
+      {isOpen && <div className="section-content">{children}</div>}
+    </div>
+  );
+};
 
 export const SettingsPanel = ({
   onClose,
@@ -156,6 +196,18 @@ export const SettingsPanel = ({
   setRecordingMode,
 }: SettingsPanelProps) => {
   const [bgFilter, setBgFilter] = useState("all");
+  const [openSections, setOpenSections] = useState<string[]>([
+    "recording",
+    "appearance",
+  ]);
+
+  const toggleSection = (section: string) => {
+    setOpenSections((prev) =>
+      prev.includes(section)
+        ? prev.filter((s) => s !== section)
+        : [...prev, section],
+    );
+  };
 
   const getPreviewClass = (ratio: string) => {
     switch (ratio) {
@@ -203,8 +255,8 @@ export const SettingsPanel = ({
               <div
                 className="preview-content-skeleton"
                 style={{
-                  borderRadius: `${borderRadius / 4}px`, // Scale down for preview
-                  margin: `${padding / 4}px`, // Scale down for preview
+                  borderRadius: `${borderRadius / 4}px`,
+                  margin: `${padding / 4}px`,
                 }}
               >
                 <div className="skeleton-line title"></div>
@@ -237,212 +289,251 @@ export const SettingsPanel = ({
           </div>
 
           <div className="controls-content">
-            <div className="control-group">
-              <label>录制模式</label>
-              <div className="switch-row">
-                <div className="mode-toggle">
-                  <button
-                    className={clsx("mode-btn", {
-                      active: recordingMode === "screen",
-                    })}
-                    onClick={() => setRecordingMode("screen")}
-                  >
-                    屏幕录制
-                  </button>
-                  <button
-                    className={clsx("mode-btn", {
-                      active: recordingMode === "canvas",
-                    })}
-                    onClick={() => setRecordingMode("canvas")}
-                  >
-                    画布录制 (无弹窗)
-                  </button>
-                </div>
-              </div>
-              <p className="control-hint">
-                {recordingMode === "screen"
-                  ? "需要选择录制区域，支持录制整个浏览器窗口。"
-                  : "直接录制画布区域，无需选择，体验更流畅。"}
-              </p>
-            </div>
-
-            <div className="control-group">
-              <label>画面比例</label>
-              <div className="ratio-grid">
-                {ASPECT_RATIOS.map((ratio) => (
-                  <button
-                    key={ratio.value}
-                    className={clsx("ratio-btn", {
-                      active: aspectRatio === ratio.value,
-                    })}
-                    onClick={() => setAspectRatio(ratio.value)}
-                  >
-                    <span className="ratio-val">{ratio.label}</span>
-                    <span className="ratio-desc">{ratio.desc}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="control-group">
-              <label>背景</label>
-              <div className="bg-categories">
-                {BG_CATEGORIES.map((cat) => (
-                  <button
-                    key={cat.id}
-                    className={clsx("cat-btn", { active: bgFilter === cat.id })}
-                    onClick={() => setBgFilter(cat.id)}
-                  >
-                    {cat.label}
-                  </button>
-                ))}
-              </div>
-
-              <button
-                className="random-bg-btn"
-                onClick={handleRandomBackground}
-              >
-                ✨ 随机选择壁纸
-              </button>
-
-              <div className="bg-grid">
-                {filteredBackgrounds.map((bg) => (
-                  <button
-                    key={bg.id}
-                    className={clsx("bg-btn", {
-                      active: background === bg.value,
-                    })}
-                    style={{ background: bg.value }}
-                    onClick={() => setBackground(bg.value)}
-                  >
-                    {background === bg.value && (
-                      <div className="checked-overlay">{CheckIcon}</div>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="control-group">
-              <div className="label-row">
-                <label>圆角半径: {borderRadius}PX</label>
-                <span className="label-hint right">圆角</span>
-              </div>
-              <input
-                type="range"
-                min="0"
-                max="64"
-                value={borderRadius}
-                onChange={(e) => setBorderRadius(parseInt(e.target.value))}
-                className="styled-slider"
-              />
-            </div>
-
-            <div className="control-group">
-              <div className="switch-row">
-                <label>摄像头</label>
-                <div className="switch-container">
-                  <label className="switch">
-                    <input
-                      type="checkbox"
-                      checked={showCamera}
-                      onChange={(e) => setShowCamera(e.target.checked)}
-                    />
-                    <span className="slider round"></span>
-                  </label>
-                  <span className="switch-label">录制时显示摄像头画面</span>
-                </div>
-              </div>
-            </div>
-
-            {showCamera && (
-              <>
-                <div className="control-group">
-                  <label>摄像头位置</label>
-                  <div className="position-grid">
-                    {[
-                      { id: "top-left", label: "左上", icon: "↖" },
-                      { id: "top-right", label: "右上", icon: "↗" },
-                      { id: "bottom-left", label: "左下", icon: "↙" },
-                      { id: "bottom-right", label: "右下", icon: "↘" },
-                    ].map((pos) => (
-                      <button
-                        key={pos.id}
-                        className={clsx("pos-btn", {
-                          active: cameraPosition === pos.id,
-                        })}
-                        onClick={() => setCameraPosition(pos.id as any)}
-                        title={pos.label}
-                      >
-                        {pos.icon}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="control-group">
-                  <div className="label-row">
-                    <label>摄像头大小: {cameraSize}px</label>
-                  </div>
-                  <input
-                    type="range"
-                    min="150"
-                    max="400"
-                    step="10"
-                    value={cameraSize}
-                    onChange={(e) => setCameraSize(Number(e.target.value))}
-                    className="styled-slider"
-                  />
-                </div>
-              </>
-            )}
-
-            <div className="control-group">
-              <div className="label-row">
-                <label>画布边距: {padding}PX</label>
-                <span className="label-hint right">大</span>
-              </div>
-              <input
-                type="range"
-                min="0"
-                max="200"
-                value={padding}
-                onChange={(e) => setPadding(parseInt(e.target.value))}
-                className="styled-slider"
-              />
-            </div>
-
-            <div className="control-group">
-              <label>鼠标光标颜色</label>
-              <div className="color-picker-row">
-                <div className="color-swatches">
-                  {CURSOR_COLORS.map((color) => (
+            {/* 录制设置 */}
+            <CollapsibleSection
+              title="录制设置"
+              icon={VideoIcon}
+              isOpen={openSections.includes("recording")}
+              onToggle={() => toggleSection("recording")}
+            >
+              <div className="control-group">
+                <label>录制模式</label>
+                <div className="switch-row">
+                  <div className="mode-toggle">
                     <button
-                      key={color}
-                      className={clsx("color-swatch", {
-                        active: cursorColor === color,
+                      className={clsx("mode-btn", {
+                        active: recordingMode === "screen",
                       })}
-                      style={{ backgroundColor: color }}
-                      onClick={() => {
-                        setCursorColor(color);
-                        if (!showCursor) {
-                          setShowCursor(true);
-                        }
-                      }}
+                      onClick={() => setRecordingMode("screen")}
                     >
-                      {cursorColor === color && (
-                        <div className="swatch-check"></div>
+                      屏幕录制
+                    </button>
+                    <button
+                      className={clsx("mode-btn", {
+                        active: recordingMode === "canvas",
+                      })}
+                      onClick={() => setRecordingMode("canvas")}
+                    >
+                      画布录制
+                    </button>
+                  </div>
+                </div>
+                <p className="control-hint">
+                  {recordingMode === "screen"
+                    ? "需要选择录制区域，支持录制整个浏览器窗口。"
+                    : "直接录制画布区域，无需选择，体验更流畅。"}
+                </p>
+              </div>
+
+              <div className="control-group">
+                <label>画面比例</label>
+                <div className="ratio-grid">
+                  {ASPECT_RATIOS.map((ratio) => (
+                    <button
+                      key={ratio.value}
+                      className={clsx("ratio-btn", {
+                        active: aspectRatio === ratio.value,
+                      })}
+                      onClick={() => setAspectRatio(ratio.value)}
+                    >
+                      <span className="ratio-val">{ratio.label}</span>
+                      <span className="ratio-desc">{ratio.desc}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </CollapsibleSection>
+
+            {/* 外观样式 */}
+            <CollapsibleSection
+              title="外观样式"
+              icon={PaletteIcon}
+              isOpen={openSections.includes("appearance")}
+              onToggle={() => toggleSection("appearance")}
+            >
+              <div className="control-group">
+                <label>背景</label>
+                <div className="bg-categories">
+                  {BG_CATEGORIES.map((cat) => (
+                    <button
+                      key={cat.id}
+                      className={clsx("cat-btn", {
+                        active: bgFilter === cat.id,
+                      })}
+                      onClick={() => setBgFilter(cat.id)}
+                    >
+                      {cat.label}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  className="random-bg-btn"
+                  onClick={handleRandomBackground}
+                >
+                  ✨ 随机选择壁纸
+                </button>
+
+                <div className="bg-grid">
+                  {filteredBackgrounds.map((bg) => (
+                    <button
+                      key={bg.id}
+                      className={clsx("bg-btn", {
+                        active: background === bg.value,
+                      })}
+                      style={{ background: bg.value }}
+                      onClick={() => setBackground(bg.value)}
+                    >
+                      {background === bg.value && (
+                        <div className="checked-overlay">{CheckIcon}</div>
                       )}
                     </button>
                   ))}
                 </div>
               </div>
-            </div>
 
-            <div className="control-group account-section">
-              <label>账户</label>
-              <button className="pro-btn">⭐ 去除水印 — $20 一次性付款</button>
-            </div>
+              <div className="control-group">
+                <div className="label-row">
+                  <label>圆角半径: {borderRadius}px</label>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="64"
+                  value={borderRadius}
+                  onChange={(e) => setBorderRadius(parseInt(e.target.value))}
+                  className="styled-slider"
+                />
+              </div>
+
+              <div className="control-group">
+                <div className="label-row">
+                  <label>画布边距: {padding}px</label>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="200"
+                  value={padding}
+                  onChange={(e) => setPadding(parseInt(e.target.value))}
+                  className="styled-slider"
+                />
+              </div>
+            </CollapsibleSection>
+
+            {/* 摄像头设置 */}
+            <CollapsibleSection
+              title="摄像头"
+              icon={CameraIcon}
+              isOpen={openSections.includes("camera")}
+              onToggle={() => toggleSection("camera")}
+            >
+              <div className="control-group">
+                <div className="switch-row">
+                  <label>启用摄像头</label>
+                  <div className="switch-container">
+                    <label className="switch">
+                      <input
+                        type="checkbox"
+                        checked={showCamera}
+                        onChange={(e) => setShowCamera(e.target.checked)}
+                      />
+                      <span className="slider round"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              {showCamera && (
+                <>
+                  <div className="control-group">
+                    <label>摄像头位置</label>
+                    <div className="position-grid">
+                      {[
+                        { id: "top-left", label: "左上", icon: "↖" },
+                        { id: "top-right", label: "右上", icon: "↗" },
+                        { id: "bottom-left", label: "左下", icon: "↙" },
+                        { id: "bottom-right", label: "右下", icon: "↘" },
+                      ].map((pos) => (
+                        <button
+                          key={pos.id}
+                          className={clsx("pos-btn", {
+                            active: cameraPosition === pos.id,
+                          })}
+                          onClick={() => setCameraPosition(pos.id as any)}
+                          title={pos.label}
+                        >
+                          {pos.icon}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="control-group">
+                    <div className="label-row">
+                      <label>摄像头大小: {cameraSize}px</label>
+                    </div>
+                    <input
+                      type="range"
+                      min="150"
+                      max="400"
+                      step="10"
+                      value={cameraSize}
+                      onChange={(e) => setCameraSize(Number(e.target.value))}
+                      className="styled-slider"
+                    />
+                  </div>
+                </>
+              )}
+            </CollapsibleSection>
+
+            {/* 光标设置 */}
+            <CollapsibleSection
+              title="光标"
+              icon={MousePointerIcon}
+              isOpen={openSections.includes("cursor")}
+              onToggle={() => toggleSection("cursor")}
+            >
+              <div className="control-group">
+                <div className="switch-row">
+                  <label>显示光标</label>
+                  <div className="switch-container">
+                    <label className="switch">
+                      <input
+                        type="checkbox"
+                        checked={showCursor}
+                        onChange={(e) => setShowCursor(e.target.checked)}
+                      />
+                      <span className="slider round"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              {showCursor && (
+                <div className="control-group">
+                  <label>光标颜色</label>
+                  <div className="color-picker-row">
+                    <div className="color-swatches">
+                      {CURSOR_COLORS.map((color) => (
+                        <button
+                          key={color}
+                          className={clsx("color-swatch", {
+                            active: cursorColor === color,
+                          })}
+                          style={{ backgroundColor: color }}
+                          onClick={() => setCursorColor(color)}
+                        >
+                          {cursorColor === color && (
+                            <div className="swatch-check"></div>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </CollapsibleSection>
 
             <div className="footer-actions">
               <button className="done-btn" onClick={onClose}>

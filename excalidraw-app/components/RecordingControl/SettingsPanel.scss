@@ -168,18 +168,24 @@
     }
 
     .close-btn {
-      background: none;
+      background: #f5f5f5;
       border: none;
       cursor: pointer;
-      padding: 4px;
-      border-radius: 50%;
+      padding: 8px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #999;
+      color: #666;
+      transition: all 0.2s;
+
+      svg {
+        width: 20px;
+        height: 20px;
+      }
 
       &:hover {
-        background: #f0f0f0;
+        background: #e0e0e0;
         color: #333;
       }
     }
@@ -203,7 +209,11 @@
     }
 
     .control-group {
-      margin-top: 24px;
+      margin-top: 20px;
+
+      &:first-child {
+        margin-top: 0;
+      }
 
       & > label {
         display: block;
@@ -211,6 +221,92 @@
         font-weight: 600;
         color: #888;
         margin-bottom: 12px;
+      }
+    }
+
+    /* Collapsible Sections */
+    .collapsible-section {
+      border-bottom: 1px solid #eee;
+
+      &:last-of-type {
+        border-bottom: none;
+      }
+
+      .section-header {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 0;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+        transition: color 0.2s;
+
+        &:hover {
+          color: #000;
+        }
+
+        .section-title {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+
+          .section-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: #f5f5f5;
+            border-radius: 6px;
+            color: #666;
+
+            svg {
+              width: 16px;
+              height: 16px;
+            }
+          }
+        }
+
+        .section-toggle {
+          display: flex;
+          align-items: center;
+          color: #999;
+
+          svg {
+            width: 18px;
+            height: 18px;
+          }
+        }
+      }
+
+      .section-content {
+        padding-bottom: 20px;
+        animation: slideDown 0.2s ease;
+      }
+
+      &.open {
+        .section-header {
+          .section-icon {
+            background: #222;
+            color: #fff;
+          }
+        }
+      }
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
       }
     }
 
