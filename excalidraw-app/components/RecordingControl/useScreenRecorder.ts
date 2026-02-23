@@ -229,7 +229,6 @@ export const useScreenRecorder = ({
       }
 
       const screenVideo = videoElementsRef.current.screen;
-      const cameraVideo = videoElementsRef.current.camera;
       const canvas = canvasRef.current!;
       const ctx = canvas.getContext("2d");
 
@@ -514,7 +513,9 @@ export const useScreenRecorder = ({
             ctx.restore();
           }
 
-          if (cameraVideo && cameraVideo.videoWidth) {
+          // Draw camera overlay
+          const currentCameraVideo = videoElementsRef.current?.camera;
+          if (currentCameraVideo && currentCameraVideo.readyState >= 2) {
             const camSize = cameraSize;
             let camX = padding;
             let camY = padding;
@@ -540,14 +541,14 @@ export const useScreenRecorder = ({
             );
             ctx.clip();
 
-            const cVw = cameraVideo.videoWidth;
-            const cVh = cameraVideo.videoHeight;
+            const cVw = currentCameraVideo.videoWidth || 1280;
+            const cVh = currentCameraVideo.videoHeight || 720;
             const cMin = Math.min(cVw, cVh);
             const cSx = (cVw - cMin) / 2;
             const cSy = (cVh - cMin) / 2;
 
             ctx.drawImage(
-              cameraVideo,
+              currentCameraVideo,
               cSx,
               cSy,
               cMin,
