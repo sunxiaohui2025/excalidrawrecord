@@ -4,11 +4,13 @@ import { useRecordingDimensions } from "./useRecordingDimensions";
 interface RecordingFrameProps {
   visible: boolean;
   aspectRatio: string;
+  countdown?: number;
 }
 
 export const RecordingFrame = ({
   visible,
   aspectRatio,
+  countdown,
 }: RecordingFrameProps) => {
   const { width, height, left, top } = useRecordingDimensions(aspectRatio);
 
@@ -28,6 +30,11 @@ export const RecordingFrame = ({
         }}
       >
         <div className="recording-label">REC</div>
+        {countdown !== undefined && countdown > 0 && (
+          <div className="countdown-wrapper">
+            <div className="countdown-number">{countdown}</div>
+          </div>
+        )}
       </div>
     </div>
   );

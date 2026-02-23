@@ -106,12 +106,17 @@
         border-radius: 50%;
         background-color: #ff4d4f;
 
-        &:not(.paused) {
+        &:not(.paused):not(.counting) {
           animation: blink 1s infinite;
         }
 
         &.paused {
           background-color: #faad14;
+        }
+
+        &.counting {
+          background-color: #1890ff;
+          animation: blink 0.5s infinite;
         }
       }
     }

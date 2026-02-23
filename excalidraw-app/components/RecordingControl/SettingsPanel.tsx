@@ -13,6 +13,8 @@ import {
 } from "./Icons";
 import "./SettingsPanel.scss";
 
+type VideoFormat = "webm" | "mp4" | "mov";
+
 interface SettingsPanelProps {
   onClose: () => void;
   aspectRatio: string;
@@ -37,6 +39,10 @@ interface SettingsPanelProps {
   setCameraSize: (size: number) => void;
   recordingMode: "screen" | "canvas";
   setRecordingMode: (mode: "screen" | "canvas") => void;
+  videoFormat: VideoFormat;
+  setVideoFormat: (format: VideoFormat) => void;
+  countdown: number;
+  setCountdown: (count: number) => void;
 }
 
 const ASPECT_RATIOS = [
@@ -46,6 +52,12 @@ const ASPECT_RATIOS = [
   { label: "9:16", desc: "抖音", value: "9/16" },
   { label: "1:1", desc: "正方形", value: "1/1" },
   { label: "习俗", desc: "自定义", value: "custom" },
+];
+
+const VIDEO_FORMATS = [
+  { label: "WebM", desc: "推荐，兼容性最好", value: "webm" },
+  { label: "MP4", desc: "通用格式", value: "mp4" },
+  { label: "MOV", desc: "Apple格式", value: "mov" },
 ];
 
 const BG_CATEGORIES = [
@@ -194,6 +206,10 @@ export const SettingsPanel = ({
   setCameraSize,
   recordingMode,
   setRecordingMode,
+  videoFormat,
+  setVideoFormat,
+  countdown,
+  setCountdown,
 }: SettingsPanelProps) => {
   const [bgFilter, setBgFilter] = useState("all");
   const [openSections, setOpenSections] = useState<string[]>([
@@ -341,6 +357,43 @@ export const SettingsPanel = ({
                     </button>
                   ))}
                 </div>
+              </div>
+
+              <div className="control-group">
+                <label>视频格式</label>
+                <div className="format-grid">
+                  {VIDEO_FORMATS.map((format) => (
+                    <button
+                      key={format.value}
+                      className={clsx("format-btn", {
+                        active: videoFormat === format.value,
+                      })}
+                      onClick={() =>
+                        setVideoFormat(format.value as VideoFormat)
+                      }
+                    >
+                      <span className="format-val">{format.label}</span>
+                      <span className="format-desc">{format.desc}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="control-group">
+                <div className="label-row">
+                  <label>倒计时</label>
+                  <span className="label-hint right">{countdown} 秒</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="10"
+                  step="1"
+                  value={countdown}
+                  onChange={(e) => setCountdown(parseInt(e.target.value))}
+                  className="styled-slider"
+                />
+                <p className="control-hint">录制开始前的倒计时，方便做准备</p>
               </div>
             </CollapsibleSection>
 

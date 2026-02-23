@@ -9,6 +9,7 @@ import {
   PlayIcon,
   StopIcon,
   CursorIcon,
+  CameraIcon,
 } from "./Icons";
 import "./ControlMenu.scss";
 
@@ -24,6 +25,10 @@ interface ControlMenuProps {
   showCursor?: boolean;
   onToggleCursor?: () => void;
   showTeleprompter?: boolean;
+  cursorColor?: string;
+  showCamera?: boolean;
+  onToggleCamera?: () => void;
+  isCountingDown?: boolean;
 }
 
 const formatTime = (seconds: number) => {
@@ -44,6 +49,10 @@ export const ControlMenu = ({
   showCursor = true,
   onToggleCursor,
   showTeleprompter = false,
+  cursorColor = "#f03e3e",
+  showCamera = false,
+  onToggleCamera,
+  isCountingDown = false,
 }: ControlMenuProps) => {
   const [position, setPosition] = useState({
     x: window.innerWidth - 300,
@@ -90,7 +99,7 @@ export const ControlMenu = ({
     document.body.style.userSelect = "none";
   };
 
-  if (isRecording) {
+  if (isRecording || isCountingDown) {
     return (
       <div
         className="recording-control-menu recording-mode"
@@ -98,8 +107,13 @@ export const ControlMenu = ({
         onMouseDown={handleMouseDown}
       >
         <div className="timer-display">
-          <div className={clsx("recording-dot", { paused: isPaused })}></div>
-          {formatTime(recordingTime)}
+          <div
+            className={clsx("recording-dot", {
+              paused: isPaused,
+              counting: isCountingDown,
+            })}
+          ></div>
+          {isCountingDown ? `准备中` : formatTime(recordingTime)}
         </div>
 
         <div className="divider"></div>
@@ -123,11 +137,20 @@ export const ControlMenu = ({
         <div className="divider"></div>
 
         <button
-          className={clsx("control-btn", { active: showCursor })}
+          className={clsx("control-btn cursor-btn", { active: showCursor })}
           onClick={onToggleCursor}
           title={showCursor ? "隐藏光标" : "显示光标"}
+          style={{ color: showCursor ? cursorColor : undefined }}
         >
           {CursorIcon}
+        </button>
+
+        <button
+          className={clsx("control-btn", { active: showCamera })}
+          onClick={onToggleCamera}
+          title={showCamera ? "关闭摄像头" : "开启摄像头"}
+        >
+          {CameraIcon}
         </button>
 
         <button

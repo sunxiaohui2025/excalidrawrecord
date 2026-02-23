@@ -399,8 +399,36 @@ const ExcalidrawWrapper = () => {
   const [recordingMode, setRecordingMode] = useState<"screen" | "canvas">(
     "canvas",
   );
+  const [videoFormat, setVideoFormat] = useState<"webm" | "mp4" | "mov">("mp4");
+  const [countdown, setCountdown] = useState(3);
+  const [isCountingDown, setIsCountingDown] = useState(false);
+  const [countdownValue, setCountdownValue] = useState(0);
 
   const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
+
+  const {
+    isRecording,
+    startRecording,
+    stopRecording,
+    isPaused,
+    recordingTime,
+    pauseRecording,
+    resumeRecording,
+    toggleCamera: toggleRecordingCamera,
+  } = useScreenRecorder({
+    aspectRatio,
+    showCamera,
+    cameraPosition,
+    cameraSize,
+    padding,
+    showCursor,
+    cameraStream,
+    recordingMode,
+    cursorColor,
+    background,
+    borderRadius,
+    videoFormat,
+  });
 
   useEffect(() => {
     let activeStream: MediaStream | null = null;
@@ -417,6 +445,10 @@ const ExcalidrawWrapper = () => {
         });
         activeStream = mediaStream;
         setCameraStream(mediaStream);
+        // If recording, notify the recorder about the new camera stream
+        if (isRecording && toggleRecordingCamera) {
+          toggleRecordingCamera(true, mediaStream);
+        }
       } catch (err) {
         console.error("Failed to access camera:", err);
       }
@@ -426,6 +458,10 @@ const ExcalidrawWrapper = () => {
       startCamera();
     } else {
       setCameraStream(null);
+      // If recording, notify the recorder to stop camera
+      if (isRecording && toggleRecordingCamera) {
+        toggleRecordingCamera(false, null);
+      }
     }
 
     return () => {
@@ -433,29 +469,24 @@ const ExcalidrawWrapper = () => {
         activeStream.getTracks().forEach((track) => track.stop());
       }
     };
-  }, [showCamera]);
+  }, [showCamera, isRecording, toggleRecordingCamera]);
 
-  const {
-    isRecording,
-    startRecording,
-    stopRecording,
-    isPaused,
-    recordingTime,
-    pauseRecording,
-    resumeRecording,
-  } = useScreenRecorder({
-    aspectRatio,
-    showCamera,
-    cameraPosition,
-    cameraSize,
-    padding,
-    showCursor,
-    cameraStream,
-    recordingMode,
-    cursorColor,
-    background,
-    borderRadius,
-  });
+  // Countdown effect
+  useEffect(() => {
+    if (!isCountingDown || countdownValue <= 0) {
+      if (isCountingDown && countdownValue <= 0) {
+        setIsCountingDown(false);
+        startRecording();
+      }
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setCountdownValue((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [isCountingDown, countdownValue, startRecording]);
 
   const recordingDimensions = useRecordingDimensions(aspectRatio);
 
@@ -1003,7 +1034,18 @@ const ExcalidrawWrapper = () => {
         <ControlMenu
           onSettingsClick={() => setShowSettings(true)}
           onTeleprompterClick={() => setShowTeleprompter(!showTeleprompter)}
-          onRecordClick={isRecording ? stopRecording : startRecording}
+          onRecordClick={
+            isRecording
+              ? stopRecording
+              : () => {
+                  if (countdown > 0) {
+                    setIsCountingDown(true);
+                    setCountdownValue(countdown);
+                  } else {
+                    startRecording();
+                  }
+                }
+          }
           isRecording={isRecording}
           isPaused={isPaused}
           recordingTime={recordingTime}
@@ -1012,6 +1054,10 @@ const ExcalidrawWrapper = () => {
           showCursor={showCursor}
           onToggleCursor={() => setShowCursor(!showCursor)}
           showTeleprompter={showTeleprompter}
+          cursorColor={cursorColor}
+          showCamera={showCamera}
+          onToggleCamera={() => setShowCamera(!showCamera)}
+          isCountingDown={isCountingDown}
         />
 
         {showSettings && (
@@ -1037,10 +1083,18 @@ const ExcalidrawWrapper = () => {
             setCameraSize={setCameraSize}
             recordingMode={recordingMode}
             setRecordingMode={setRecordingMode}
+            videoFormat={videoFormat}
+            setVideoFormat={setVideoFormat}
+            countdown={countdown}
+            setCountdown={setCountdown}
           />
         )}
 
-        <RecordingFrame visible={isRecording} aspectRatio={aspectRatio} />
+        <RecordingFrame
+          visible={isRecording || isCountingDown}
+          aspectRatio={aspectRatio}
+          countdown={isCountingDown ? countdownValue : undefined}
+        />
 
         <CameraOverlay
           visible={showCamera}

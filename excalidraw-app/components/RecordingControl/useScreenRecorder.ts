@@ -1,5 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 
+type VideoFormat = "webm" | "mp4" | "mov";
+
 interface UseScreenRecorderProps {
   onStop?: (blob: Blob) => void;
   aspectRatio?: string;
@@ -13,6 +15,7 @@ interface UseScreenRecorderProps {
   cursorColor?: string;
   background?: string;
   borderRadius?: number;
+  videoFormat?: VideoFormat;
 }
 
 export const useScreenRecorder = ({
@@ -28,6 +31,7 @@ export const useScreenRecorder = ({
   cursorColor = "#f03e3e",
   background = "#000000",
   borderRadius = 0,
+  videoFormat = "webm",
 }: UseScreenRecorderProps = {}) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -598,8 +602,27 @@ export const useScreenRecorder = ({
 
       const combinedStream = new MediaStream(tracks);
 
+      // Determine mimeType based on video format
+      const getMimeType = (format: VideoFormat): string => {
+        switch (format) {
+          case "mp4":
+            return MediaRecorder.isTypeSupported("video/mp4")
+              ? "video/mp4"
+              : "video/webm;codecs=vp9";
+          case "mov":
+            // QuickTime format, supported on Safari
+            return MediaRecorder.isTypeSupported("video/quicktime")
+              ? "video/quicktime"
+              : "video/webm;codecs=vp9";
+          case "webm":
+          default:
+            return "video/webm;codecs=vp9";
+        }
+      };
+
+      const mimeType = getMimeType(videoFormat);
       const mediaRecorder = new MediaRecorder(combinedStream, {
-        mimeType: "video/webm;codecs=vp9",
+        mimeType,
       });
 
       mediaRecorderRef.current = mediaRecorder;
@@ -613,8 +636,12 @@ export const useScreenRecorder = ({
 
       mediaRecorder.onstop = () => {
         stopTimer();
+        const blobType =
+          videoFormat === "mp4" && mimeType === "video/mp4"
+            ? "video/mp4"
+            : "video/webm";
         const blob = new Blob(chunksRef.current, {
-          type: "video/webm",
+          type: blobType,
         });
         setIsRecording(false);
         setIsPaused(false);
@@ -631,7 +658,8 @@ export const useScreenRecorder = ({
           document.body.appendChild(a);
           a.style.display = "none";
           a.href = url;
-          a.download = `excalidraw-recording-${new Date().toISOString()}.webm`;
+          const extension = videoFormat;
+          a.download = `excalidraw-recording-${new Date().toISOString()}.${extension}`;
           a.click();
           window.URL.revokeObjectURL(url);
         }
@@ -674,6 +702,7 @@ export const useScreenRecorder = ({
     cursorColor,
     background,
     borderRadius,
+    videoFormat,
   ]);
 
   const stopRecording = useCallback(() => {
@@ -699,6 +728,29 @@ export const useScreenRecorder = ({
     }
   }, [isRecording, isPaused, startTimer]);
 
+  // Toggle camera during recording
+  const toggleCamera = useCallback(
+    async (show: boolean, stream: MediaStream | null) => {
+      if (!videoElementsRef.current) {
+        return;
+      }
+
+      if (show && stream) {
+        // Start camera
+        const cameraVideo = document.createElement("video");
+        cameraVideo.muted = true;
+        cameraVideo.srcObject = stream;
+        await cameraVideo.play();
+        videoElementsRef.current.camera = cameraVideo;
+      } else if (videoElementsRef.current.camera) {
+        // Stop camera
+        videoElementsRef.current.camera.srcObject = null;
+        videoElementsRef.current.camera = null;
+      }
+    },
+    [],
+  );
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -714,5 +766,6 @@ export const useScreenRecorder = ({
     recordingTime,
     pauseRecording,
     resumeRecording,
+    toggleCamera,
   };
 };
