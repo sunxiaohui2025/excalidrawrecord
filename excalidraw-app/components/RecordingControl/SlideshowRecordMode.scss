@@ -5,7 +5,7 @@
   right: 0;
   bottom: 0;
   pointer-events: none;
-  z-index: 100;
+  z-index: 1;
 
   // 录制区域高亮框
   .slideshow-recording-frame {
@@ -237,17 +237,6 @@
     }
   }
 
-  // 切换中遮罩
-  .switching-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.3);
-    pointer-events: none;
-    cursor: wait;
-  }
 }
 
 // 幻灯片录制模式下不需要隐藏编辑 UI，保持所有功能可用

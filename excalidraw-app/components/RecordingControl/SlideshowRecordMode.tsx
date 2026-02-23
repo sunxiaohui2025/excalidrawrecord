@@ -441,9 +441,6 @@ export const SlideshowRecordMode: React.FC<SlideshowRecordModeProps> = ({
           </span>
         </div>
       </div>
-
-      {/* 切换中遮罩 */}
-      {isSwitching && <div className="switching-overlay" />}
     </div>
   );
 };
