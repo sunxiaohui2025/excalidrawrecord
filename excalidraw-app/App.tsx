@@ -104,6 +104,8 @@ import { SettingsPanel } from "./components/RecordingControl/SettingsPanel";
 import { TeleprompterPanel } from "./components/RecordingControl/TeleprompterPanel";
 import { SlideshowPanel } from "./components/RecordingControl/SlideshowPanel";
 import { useScreenRecorder } from "./components/RecordingControl/useScreenRecorder";
+import { useRecordingDimensions } from "./components/RecordingControl/useRecordingDimensions";
+import { RecordingFrame } from "./components/RecordingControl/RecordingFrame";
 import {
   ExportToExcalidrawPlus,
   exportToExcalidrawPlus,
@@ -452,6 +454,8 @@ const ExcalidrawWrapper = () => {
     recordingMode,
     cursorColor,
   });
+
+  const recordingDimensions = useRecordingDimensions(aspectRatio);
 
   const [langCode, setLangCode] = useAppLangCode();
 
@@ -1034,11 +1038,19 @@ const ExcalidrawWrapper = () => {
           />
         )}
 
+        <RecordingFrame visible={isRecording} aspectRatio={aspectRatio} />
+
         <CameraOverlay
           visible={showCamera}
           position={cameraPosition}
           defaultSize={cameraSize}
           stream={cameraStream}
+          containerRect={{
+            x: recordingDimensions.left,
+            y: recordingDimensions.top,
+            width: recordingDimensions.width,
+            height: recordingDimensions.height,
+          }}
         />
 
         {showTeleprompter && (

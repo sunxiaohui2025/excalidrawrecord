@@ -1,0 +1,28 @@
+.recording-frame-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 999; /* Below CameraOverlay (1000) but above canvas */
+
+  .recording-frame {
+    position: absolute;
+    border: 2px dashed rgba(255, 59, 48, 0.8); /* Red dashed border */
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5); /* Dim outside area */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+
+    .recording-label {
+      background: rgba(255, 59, 48, 0.9);
+      color: white;
+      padding: 2px 8px;
+      font-size: 12px;
+      border-radius: 0 0 4px 4px;
+      font-weight: bold;
+      pointer-events: none;
+    }
+  }
+}

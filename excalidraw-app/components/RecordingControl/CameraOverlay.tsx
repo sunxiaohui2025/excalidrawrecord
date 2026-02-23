@@ -9,6 +9,12 @@ interface CameraOverlayProps {
   defaultSize: number; // percentage or pixel width
   onToggleSize?: () => void;
   stream: MediaStream | null;
+  containerRect?: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  } | null;
 }
 
 export const CameraOverlay = ({
@@ -16,6 +22,7 @@ export const CameraOverlay = ({
   position,
   defaultSize,
   stream,
+  containerRect,
 }: CameraOverlayProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [scale, setScale] = useState(1);
@@ -32,9 +39,10 @@ export const CameraOverlay = ({
   // Reset drag position when the position prop changes (e.g. from settings)
   useEffect(() => {
     setDragPosition(null);
-  }, [position]);
+  }, [position, containerRect]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
+    e.stopPropagation();
     // Don't start drag if clicking on controls
     if ((e.target as HTMLElement).closest(".camera-controls")) {
       return;
@@ -93,6 +101,44 @@ export const CameraOverlay = ({
     return null;
   }
 
+  const getContainerPositionStyle = () => {
+    if (!containerRect) {
+      return {};
+    }
+
+    const { x, y, width, height } = containerRect;
+    const padding = 20; // Default padding used in SCSS
+    const elWidth = defaultSize * scale;
+
+    const style: React.CSSProperties = {
+      bottom: "auto",
+      right: "auto",
+      transform: "none",
+    };
+
+    switch (position) {
+      case "top-left":
+        style.top = y + padding;
+        style.left = x + padding;
+        break;
+      case "top-right":
+        style.top = y + padding;
+        style.left = x + width - elWidth - padding;
+        break;
+      case "bottom-left":
+        style.top = y + height - elWidth - padding;
+        style.left = x + padding;
+        break;
+      case "bottom-right":
+        style.top = y + height - elWidth - padding;
+        style.left = x + width - elWidth - padding;
+        break;
+    }
+    return style;
+  };
+
+  const containerStyle = getContainerPositionStyle();
+
   return (
     <div
       className={clsx("camera-overlay", position, {
@@ -109,6 +155,8 @@ export const CameraOverlay = ({
               right: "auto",
               transform: "none", // Disable any transform that might interfere
             }
+          : containerRect
+          ? containerStyle
           : {}),
       }}
       onMouseEnter={() => setIsHovered(true)}
