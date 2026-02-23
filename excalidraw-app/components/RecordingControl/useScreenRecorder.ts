@@ -2,6 +2,13 @@ import { useState, useRef, useCallback, useEffect } from "react";
 
 type VideoFormat = "webm" | "mp4" | "mov";
 
+interface RecordingArea {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 interface UseScreenRecorderProps {
   onStop?: (blob: Blob) => void;
   aspectRatio?: string;
@@ -18,6 +25,7 @@ interface UseScreenRecorderProps {
   background?: string;
   borderRadius?: number;
   videoFormat?: VideoFormat;
+  recordingArea?: RecordingArea | null; // 指定录制区域，null 表示全屏
 }
 
 export const useScreenRecorder = ({
@@ -36,6 +44,7 @@ export const useScreenRecorder = ({
   background = "#000000",
   borderRadius = 0,
   videoFormat = "webm",
+  recordingArea = null,
 }: UseScreenRecorderProps = {}) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -525,77 +534,142 @@ export const useScreenRecorder = ({
 
             let srcW = vSw;
             let srcH = vSh;
+            let srcX = 0;
+            let srcY = 0;
 
-            if (srcW / srcH > targetRatio) {
-              srcW = srcH * targetRatio;
+            // 如果指定了录制区域，使用该区域
+            if (recordingArea) {
+              srcX = recordingArea.x;
+              srcY = recordingArea.y;
+              srcW = recordingArea.width;
+              srcH = recordingArea.height;
+
+              // 调整画布尺寸为录制区域尺寸
+              canvas.width = Math.round(srcW / 2) * 2;
+              canvas.height = Math.round(srcH / 2) * 2;
+
+              // 直接绘制录制区域
+              ctx.drawImage(
+                screenVideo,
+                srcX,
+                srcY,
+                srcW,
+                srcH,
+                0,
+                0,
+                canvas.width,
+                canvas.height,
+              );
+
+              // Draw custom cursor in screen mode with recording area
+              if (showCursor) {
+                const { x: clientX, y: clientY } = mousePosRef.current;
+
+                // 检查光标是否在录制区域内
+                if (
+                  clientX >= srcX &&
+                  clientX <= srcX + srcW &&
+                  clientY >= srcY &&
+                  clientY <= srcY + srcH
+                ) {
+                  // Map coordinates relative to recording area
+                  const relX = (clientX - srcX) / srcW;
+                  const relY = (clientY - srcY) / srcH;
+
+                  const destX = relX * canvas.width;
+                  const destY = relY * canvas.height;
+
+                  ctx.save();
+                  ctx.beginPath();
+                  ctx.arc(destX, destY, cursorSize, 0, Math.PI * 2);
+                  ctx.fillStyle = `${cursorColor}80`;
+                  ctx.fill();
+                  ctx.strokeStyle = "white";
+                  ctx.lineWidth = 2;
+                  ctx.stroke();
+                  ctx.restore();
+                }
+              }
             } else {
-              srcH = srcW / targetRatio;
-            }
+              // 原有逻辑：全屏录制
+              if (srcW / srcH > targetRatio) {
+                srcW = srcH * targetRatio;
+              } else {
+                srcH = srcW / targetRatio;
+              }
 
-            const srcX = (vSw - srcW) / 2;
-            const srcY = (vSh - srcH) / 2;
+              srcX = (vSw - srcW) / 2;
+              srcY = (vSh - srcH) / 2;
 
-            // Draw screen content with rounded corners
-            ctx.save();
-            drawRoundedRectPath(
-              ctx,
-              contentX,
-              contentY,
-              contentWidth,
-              contentHeight,
-              borderRadius,
-            );
-            ctx.clip();
-            ctx.drawImage(
-              screenVideo,
-              srcX,
-              srcY,
-              srcW,
-              srcH,
-              contentX,
-              contentY,
-              contentWidth,
-              contentHeight,
-            );
-            ctx.restore();
-
-            // Draw custom cursor in screen mode
-            if (showCursor) {
-              const { x: clientX, y: clientY } = mousePosRef.current;
-
-              // Map screen coordinates to canvas coordinates
-              const relX = clientX / window.screen.width;
-              const relY = clientY / window.screen.height;
-
-              const destX =
-                contentX + (relX * vSw - srcX) * (contentWidth / srcW);
-              const destY =
-                contentY + (relY * vSh - srcY) * (contentHeight / srcH);
-
+              // Draw screen content with rounded corners
               ctx.save();
-              ctx.beginPath();
-              ctx.arc(destX, destY, cursorSize, 0, Math.PI * 2);
-              ctx.fillStyle = `${cursorColor}80`; // add transparency
-              ctx.fill();
-              ctx.strokeStyle = "white";
-              ctx.lineWidth = 2;
-              ctx.stroke();
+              drawRoundedRectPath(
+                ctx,
+                contentX,
+                contentY,
+                contentWidth,
+                contentHeight,
+                borderRadius,
+              );
+              ctx.clip();
+              ctx.drawImage(
+                screenVideo,
+                srcX,
+                srcY,
+                srcW,
+                srcH,
+                contentX,
+                contentY,
+                contentWidth,
+                contentHeight,
+              );
               ctx.restore();
+
+              // Draw custom cursor in screen mode
+              if (showCursor) {
+                const { x: clientX, y: clientY } = mousePosRef.current;
+
+                // Map screen coordinates to canvas coordinates
+                const relX = clientX / window.screen.width;
+                const relY = clientY / window.screen.height;
+
+                const destX =
+                  contentX + (relX * vSw - srcX) * (contentWidth / srcW);
+                const destY =
+                  contentY + (relY * vSh - srcY) * (contentHeight / srcH);
+
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(destX, destY, cursorSize, 0, Math.PI * 2);
+                ctx.fillStyle = `${cursorColor}80`;
+                ctx.fill();
+                ctx.strokeStyle = "white";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                ctx.restore();
+              }
             }
           }
 
           // Draw camera overlay
           const currentCameraVideo = videoElementsRef.current?.camera;
           if (currentCameraVideo && currentCameraVideo.readyState >= 2) {
-            const camSize = cameraSize;
+            // 使用当前 canvas 尺寸（可能因 recordingArea 而改变）
+            const canvasWidth = canvas.width;
+            const canvasHeight = canvas.height;
+            const camSize = Math.min(
+              cameraSize,
+              canvasWidth / 4,
+              canvasHeight / 4,
+            );
             let camX = padding;
             let camY = padding;
 
             if (cameraPosition.includes("right")) {
-              camX = cw - camSize - padding;
+              camX = canvasWidth - camSize - padding;
             }
             if (cameraPosition.includes("bottom")) {
-              camY = ch - camSize - padding;
+              camY = canvasHeight - camSize - padding;
             }
 
             ctx.save();
@@ -681,8 +755,33 @@ export const useScreenRecorder = ({
                   canvasContentY +
                   (sy - canvasSrcRect.y) *
                     (canvasContentHeight / canvasSrcRect.h);
+              } else if (recordingArea) {
+                // 指定录制区域模式
+                const {
+                  x: raX,
+                  y: raY,
+                  width: raW,
+                  height: raH,
+                } = recordingArea;
+
+                // 检查波纹是否在录制区域内
+                if (
+                  ripple.x >= raX &&
+                  ripple.x <= raX + raW &&
+                  ripple.y >= raY &&
+                  ripple.y <= raY + raH
+                ) {
+                  const relX = (ripple.x - raX) / raW;
+                  const relY = (ripple.y - raY) / raH;
+
+                  rippleX = relX * canvas.width;
+                  rippleY = relY * canvas.height;
+                } else {
+                  // 波纹在录制区域外，不绘制
+                  return;
+                }
               } else {
-                // Screen mode - use same logic as cursor drawing
+                // 全屏录制模式
                 const vSw = screenVideo.videoWidth || sw;
                 const vSh = screenVideo.videoHeight || sh;
 
@@ -878,6 +977,7 @@ export const useScreenRecorder = ({
     background,
     borderRadius,
     videoFormat,
+    recordingArea,
   ]);
 
   const stopRecording = useCallback(() => {

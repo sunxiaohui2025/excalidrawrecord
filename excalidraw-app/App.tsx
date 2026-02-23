@@ -104,6 +104,10 @@ import { CameraOverlay } from "./components/RecordingControl/CameraOverlay";
 import { SettingsPanel } from "./components/RecordingControl/SettingsPanel";
 import { TeleprompterPanel } from "./components/RecordingControl/TeleprompterPanel";
 import { SlideshowPanel } from "./components/RecordingControl/SlideshowPanel";
+import {
+  SlideshowRecordMode,
+  type Slide,
+} from "./components/RecordingControl/SlideshowRecordMode";
 import { useScreenRecorder } from "./components/RecordingControl/useScreenRecorder";
 import { useRecordingDimensions } from "./components/RecordingControl/useRecordingDimensions";
 import { RecordingFrame } from "./components/RecordingControl/RecordingFrame";
@@ -410,6 +414,16 @@ const ExcalidrawWrapper = () => {
 
   const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
 
+  // 幻灯片录制模式状态
+  const [isSlideshowRecordMode, setIsSlideshowRecordMode] = useState(false);
+  const [slideshowSlides, setSlideshowSlides] = useState<Slide[]>([]);
+  const [slideshowRecordingArea, setSlideshowRecordingArea] = useState<{
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  } | null>(null);
+
   const {
     isRecording,
     startRecording,
@@ -433,6 +447,7 @@ const ExcalidrawWrapper = () => {
     cursorRippleSize,
     background,
     borderRadius,
+    recordingArea: slideshowRecordingArea,
     videoFormat,
   });
 
@@ -523,6 +538,160 @@ const ExcalidrawWrapper = () => {
 
   const [excalidrawAPI, excalidrawRefCallback] =
     useCallbackRefState<ExcalidrawImperativeAPI>();
+
+  // 检测画布中的幻灯片
+  const detectSlides = useCallback(() => {
+    if (!excalidrawAPI) {
+      return [];
+    }
+
+    const elements = excalidrawAPI.getSceneElements();
+    // 查找所有符合幻灯片特征的矩形（虚线边框 + 蓝色）
+    const slideElements = elements.filter((el) => {
+      if (el.type !== "rectangle") {
+        return false;
+      }
+      return (
+        el.strokeStyle === "dashed" &&
+        el.strokeColor === "#1971c2" &&
+        !el.isDeleted
+      );
+    });
+
+    // 按 x 坐标排序（从左到右）
+    const sortedSlides = slideElements.sort((a, b) => a.x - b.x);
+
+    return sortedSlides.map((el, index) => {
+      // 查找对应的文字标签（在矩形框上方附近的文字元素）
+      const labelElement = elements.find((e) => {
+        if (e.type !== "text" || e.isDeleted) {
+          return false;
+        }
+        // 文字标签在矩形框上方，x 坐标接近，y 坐标在矩形框上方
+        const xOverlap =
+          e.x >= el.x - el.width * 0.5 && e.x <= el.x + el.width * 1.5;
+        const yAbove = e.y < el.y && e.y > el.y - 100;
+        return xOverlap && yAbove;
+      });
+
+      return {
+        id: index + 1,
+        elementId: el.id,
+        labelElementId: labelElement?.id,
+      };
+    });
+  }, [excalidrawAPI]);
+
+  // 获取幻灯片的录制区域（只包含矩形框，不包含文字标签）
+  const getSlideRecordingArea = useCallback(
+    (slide: Slide) => {
+      if (!excalidrawAPI) {
+        return null;
+      }
+
+      const elements = excalidrawAPI.getSceneElements();
+      const element = elements.find((el) => el.id === slide.elementId);
+
+      if (!element) {
+        return null;
+      }
+
+      // 获取元素在屏幕上的位置
+      const appState = excalidrawAPI.getAppState();
+      const zoom = appState.zoom.value;
+
+      // 计算矩形框在屏幕上的像素位置
+      const screenX = (element.x + appState.scrollX) * zoom;
+      const screenY = (element.y + appState.scrollY) * zoom;
+      const screenWidth = element.width * zoom;
+      const screenHeight = element.height * zoom;
+
+      // 查找对应的文字标签元素（在矩形框上方）
+      if (slide.labelElementId) {
+        const labelElement = elements.find(
+          (el) => el.id === slide.labelElementId,
+        );
+        if (labelElement && !labelElement.isDeleted) {
+          // 计算文字标签的屏幕位置
+          const labelScreenY = (labelElement.y + appState.scrollY) * zoom;
+          const labelHeight = labelElement.height * zoom;
+
+          // 如果文字标签在矩形框上方，调整录制区域的 y 坐标和高度
+          if (labelScreenY + labelHeight < screenY) {
+            // 文字标签在矩形框上方，从文字标签底部开始录制
+            const adjustedY = labelScreenY + labelHeight;
+            const adjustedHeight = screenY + screenHeight - adjustedY;
+
+            return {
+              x: screenX,
+              y: adjustedY,
+              width: screenWidth,
+              height: adjustedHeight,
+            };
+          }
+        }
+      }
+
+      return {
+        x: screenX,
+        y: screenY,
+        width: screenWidth,
+        height: screenHeight,
+      };
+    },
+    [excalidrawAPI],
+  );
+
+  // 启动幻灯片录制模式
+  const startSlideshowRecording = useCallback(() => {
+    const slides = detectSlides();
+
+    if (slides.length === 0) {
+      // 没有幻灯片，进入普通录制模式（带倒计时）
+      setIsCountingDown(true);
+      setCountdownValue(countdown);
+      return;
+    }
+
+    // 有幻灯片，进入幻灯片录制模式
+    setSlideshowSlides(slides);
+    setIsSlideshowRecordMode(true);
+
+    // 设置第一个幻灯片的录制区域
+    const firstSlideArea = getSlideRecordingArea(slides[0]);
+    if (firstSlideArea) {
+      setSlideshowRecordingArea(firstSlideArea);
+    }
+
+    // 延迟开始录制，等待 UI 渲染
+    setTimeout(() => {
+      startRecording();
+    }, 100);
+  }, [detectSlides, getSlideRecordingArea, startRecording, countdown]);
+
+  // 退出幻灯片录制模式
+  const exitSlideshowRecordMode = useCallback(() => {
+    if (isRecording) {
+      stopRecording();
+    }
+    setIsSlideshowRecordMode(false);
+    setSlideshowRecordingArea(null);
+    setSlideshowSlides([]);
+  }, [isRecording, stopRecording]);
+
+  // 切换幻灯片时更新录制区域
+  const handleSlideChange = useCallback(
+    (slideElementId: string) => {
+      const slide = slideshowSlides.find((s) => s.elementId === slideElementId);
+      if (slide) {
+        const area = getSlideRecordingArea(slide);
+        if (area) {
+          setSlideshowRecordingArea(area);
+        }
+      }
+    },
+    [getSlideRecordingArea, slideshowSlides],
+  );
 
   const focusExcalidrawContainer = useCallback(() => {
     const container = document.querySelector(
@@ -1068,34 +1237,27 @@ const ExcalidrawWrapper = () => {
         }}
       >
         {/* Recording Controls */}
-        <ControlMenu
-          onSettingsClick={() => setShowSettings(true)}
-          onTeleprompterClick={() => setShowTeleprompter(!showTeleprompter)}
-          onRecordClick={
-            isRecording
-              ? stopRecording
-              : () => {
-                  if (countdown > 0) {
-                    setIsCountingDown(true);
-                    setCountdownValue(countdown);
-                  } else {
-                    startRecording();
-                  }
-                }
-          }
-          isRecording={isRecording}
-          isPaused={isPaused}
-          recordingTime={recordingTime}
-          onPauseClick={isPaused ? resumeRecording : pauseRecording}
-          onStopClick={stopRecording}
-          showCursor={showCursor}
-          onToggleCursor={() => setShowCursor(!showCursor)}
-          showTeleprompter={showTeleprompter}
-          cursorColor={cursorColor}
-          showCamera={showCamera}
-          onToggleCamera={() => setShowCamera(!showCamera)}
-          isCountingDown={isCountingDown}
-        />
+        {!isSlideshowRecordMode && (
+          <ControlMenu
+            onSettingsClick={() => setShowSettings(true)}
+            onTeleprompterClick={() => setShowTeleprompter(!showTeleprompter)}
+            onRecordClick={
+              isRecording ? stopRecording : startSlideshowRecording
+            }
+            isRecording={isRecording}
+            isPaused={isPaused}
+            recordingTime={recordingTime}
+            onPauseClick={isPaused ? resumeRecording : pauseRecording}
+            onStopClick={stopRecording}
+            showCursor={showCursor}
+            onToggleCursor={() => setShowCursor(!showCursor)}
+            showTeleprompter={showTeleprompter}
+            cursorColor={cursorColor}
+            showCamera={showCamera}
+            onToggleCamera={() => setShowCamera(!showCamera)}
+            isCountingDown={isCountingDown}
+          />
+        )}
 
         {showSettings && (
           <SettingsPanel
@@ -1137,7 +1299,7 @@ const ExcalidrawWrapper = () => {
         )}
 
         <RecordingFrame
-          visible={isRecording || isCountingDown}
+          visible={(isRecording || isCountingDown) && !isSlideshowRecordMode}
           aspectRatio={aspectRatio}
           countdown={isCountingDown ? countdownValue : undefined}
           showCursor={showCursor}
@@ -1175,10 +1337,29 @@ const ExcalidrawWrapper = () => {
           isPaused={isPaused}
           pauseRecording={pauseRecording}
           resumeRecording={resumeRecording}
-          onSlideChange={() => {
-            // 可以在这里处理幻灯片切换事件，例如更新录制区域
+          onSlideChange={(slideElementId) => {
+            // 更新录制区域
+            if (slideElementId) {
+              handleSlideChange(slideElementId);
+            }
           }}
         />
+
+        {/* 幻灯片录制模式 */}
+        {isSlideshowRecordMode && excalidrawAPI && (
+          <SlideshowRecordMode
+            excalidrawAPI={excalidrawAPI}
+            slides={slideshowSlides}
+            isRecording={isRecording}
+            isPaused={isPaused}
+            recordingTime={recordingTime}
+            pauseRecording={pauseRecording}
+            resumeRecording={resumeRecording}
+            stopRecording={stopRecording}
+            onExit={exitSlideshowRecordMode}
+            aspectRatio={aspectRatio}
+          />
+        )}
 
         <AppMainMenu
           onCollabDialogOpen={onCollabDialogOpen}
