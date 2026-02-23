@@ -155,32 +155,13 @@ export const SlideshowPanel = ({
     [excalidrawAPI, slides],
   );
 
-  // 初始化第一个幻灯片
+  // 初始化 - 不再自动创建第一个幻灯片，保持空白状态
   useEffect(() => {
     if (!excalidrawAPI || initializedRef.current) {
       return;
     }
-
-    const dimensions = calculateDimensions(aspectRatio);
-    const result = createSlideElement(1, dimensions);
-
-    if (result) {
-      const newSlide: Slide = {
-        id: 1,
-        title: "幻灯片 1",
-        elementId: result.elementId,
-        labelElementId: result.labelElementId,
-      };
-      setSlides([newSlide]);
-      setActiveSlide(1);
-      initializedRef.current = true;
-
-      // 通知父组件当前激活的幻灯片
-      if (onSlideChange) {
-        onSlideChange(result.elementId);
-      }
-    }
-  }, [excalidrawAPI, aspectRatio, onSlideChange, createSlideElement]);
+    initializedRef.current = true;
+  }, [excalidrawAPI]);
 
   // 滚动到指定幻灯片
   const scrollToSlide = useCallback(
@@ -295,19 +276,24 @@ export const SlideshowPanel = ({
       onSlideChange(result.elementId);
     }
 
-    // 延迟执行自适应，等待场景更新完成
+    // 延迟执行聚焦，等待场景更新完成
     setTimeout(() => {
-      // 获取所有幻灯片元素
+      // 只聚焦到新创建的幻灯片，保持合适的缩放比例
       const elements = excalidrawAPI.getSceneElementsIncludingDeleted();
-      const slideElements = updatedSlides
-        .map((s) => elements.find((el) => el.id === s.elementId))
-        .filter((el): el is NonNullable<typeof el> => el !== undefined);
+      const newSlideElement = elements.find((el) => el.id === result.elementId);
+      const newLabelElement = elements.find(
+        (el) => el.id === result.labelElementId,
+      );
 
-      if (slideElements.length > 0) {
-        // 自适应显示所有幻灯片
-        excalidrawAPI.scrollToContent(slideElements, {
+      if (newSlideElement) {
+        // 只聚焦到新幻灯片，不自适应所有幻灯片
+        const elementsToFocus = newLabelElement
+          ? [newSlideElement, newLabelElement]
+          : [newSlideElement];
+        excalidrawAPI.scrollToContent(elementsToFocus, {
           animate: true,
           fitToContent: true,
+          viewportZoomFactor: 0.75, // 缩小一些，确保文字提示不被顶部工具栏遮挡
         });
       }
     }, 100);
