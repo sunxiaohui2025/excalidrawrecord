@@ -11,6 +11,8 @@ interface UseScreenRecorderProps {
   cameraStream?: MediaStream | null;
   recordingMode?: "screen" | "canvas"; // 'screen' = getDisplayMedia, 'canvas' = DOM canvas capture
   cursorColor?: string;
+  background?: string;
+  borderRadius?: number;
 }
 
 export const useScreenRecorder = ({
@@ -24,6 +26,8 @@ export const useScreenRecorder = ({
   cameraStream: externalCameraStream = null,
   recordingMode = "screen",
   cursorColor = "#f03e3e",
+  background = "#000000",
+  borderRadius = 0,
 }: UseScreenRecorderProps = {}) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -273,6 +277,78 @@ export const useScreenRecorder = ({
       canvas.width = cw;
       canvas.height = ch;
 
+      // Helper function to draw rounded rectangle path
+      const drawRoundedRectPath = (
+        ctx: CanvasRenderingContext2D,
+        x: number,
+        y: number,
+        width: number,
+        height: number,
+        radius: number,
+      ) => {
+        const r = Math.min(radius, width / 2, height / 2);
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.lineTo(x + width - r, y);
+        ctx.quadraticCurveTo(x + width, y, x + width, y + r);
+        ctx.lineTo(x + width, y + height - r);
+        ctx.quadraticCurveTo(x + width, y + height, x + width - r, y + height);
+        ctx.lineTo(x + r, y + height);
+        ctx.quadraticCurveTo(x, y + height, x, y + height - r);
+        ctx.lineTo(x, y + r);
+        ctx.quadraticCurveTo(x, y, x + r, y);
+        ctx.closePath();
+      };
+
+      // Helper function to apply background (gradient or solid color)
+      const applyBackground = (
+        ctx: CanvasRenderingContext2D,
+        width: number,
+        height: number,
+        background: string,
+      ) => {
+        // Check if it's a gradient
+        if (background.includes("gradient")) {
+          // Parse linear gradient
+          const linearMatch = background.match(
+            /linear-gradient\((\d+)deg,\s*(.+)\)/,
+          );
+          if (linearMatch) {
+            const angle = parseInt(linearMatch[1]);
+            const colorsStr = linearMatch[2];
+
+            // Convert angle to radians and calculate gradient vector
+            const angleRad = ((angle - 90) * Math.PI) / 180;
+            const x1 = width / 2 - (width / 2) * Math.cos(angleRad);
+            const y1 = height / 2 - (height / 2) * Math.sin(angleRad);
+            const x2 = width / 2 + (width / 2) * Math.cos(angleRad);
+            const y2 = height / 2 + (height / 2) * Math.sin(angleRad);
+
+            const gradient = ctx.createLinearGradient(x1, y1, x2, y2);
+
+            // Parse color stops
+            const colorStops = colorsStr.split(",").map((s) => s.trim());
+            colorStops.forEach((stop) => {
+              const match = stop.match(/(.+?)\s+(\d+)%/);
+              if (match) {
+                gradient.addColorStop(
+                  parseInt(match[2]) / 100,
+                  match[1].trim(),
+                );
+              }
+            });
+
+            ctx.fillStyle = gradient;
+          } else {
+            // Fallback to solid color if parsing fails
+            ctx.fillStyle = "#fce38a";
+          }
+        } else {
+          ctx.fillStyle = background;
+        }
+        ctx.fillRect(0, 0, width, height);
+      };
+
       // 5. Animation Loop
       // Restart animation loop if not running
       if (!animationFrameRef.current) {
@@ -281,8 +357,8 @@ export const useScreenRecorder = ({
             return;
           }
 
-          // Clear with background color
-          let bgColor = "#ffffff";
+          // Clear with user configured background (gradient or color)
+          applyBackground(ctx, cw, ch, background);
 
           if (recordingMode === "canvas") {
             // Find all canvases in excalidraw container and draw them
@@ -290,19 +366,6 @@ export const useScreenRecorder = ({
             let srcRect = { x: 0, y: 0, w: cw, h: ch }; // Default fallback
 
             if (container) {
-              // Try to get background color from container
-              const computedStyle = window.getComputedStyle(container);
-              if (
-                computedStyle.backgroundColor &&
-                computedStyle.backgroundColor !== "rgba(0, 0, 0, 0)" &&
-                computedStyle.backgroundColor !== "transparent"
-              ) {
-                bgColor = computedStyle.backgroundColor;
-              }
-
-              ctx.fillStyle = bgColor;
-              ctx.fillRect(0, 0, cw, ch);
-
               const canvases = container.querySelectorAll("canvas");
               let scaleX = 1;
               let scaleY = 1;
@@ -337,6 +400,28 @@ export const useScreenRecorder = ({
                 };
               }
 
+              // Calculate centered position with padding
+              const contentWidth = cw - padding * 2;
+              const contentHeight = ch - padding * 2;
+              const contentX = padding;
+              const contentY = padding;
+
+              // Draw content with rounded corners
+              ctx.save();
+              drawRoundedRectPath(
+                ctx,
+                contentX,
+                contentY,
+                contentWidth,
+                contentHeight,
+                borderRadius,
+              );
+              ctx.clip();
+
+              // Fill with white background for content area
+              ctx.fillStyle = "#ffffff";
+              ctx.fillRect(contentX, contentY, contentWidth, contentHeight);
+
               canvases.forEach((c) => {
                 ctx.drawImage(
                   c,
@@ -344,12 +429,14 @@ export const useScreenRecorder = ({
                   srcRect.y,
                   srcRect.w,
                   srcRect.h,
-                  0,
-                  0,
-                  cw,
-                  ch,
+                  contentX,
+                  contentY,
+                  contentWidth,
+                  contentHeight,
                 );
               });
+
+              ctx.restore();
 
               if (showCursor) {
                 const { x: clientX, y: clientY } = mousePosRef.current;
@@ -362,9 +449,11 @@ export const useScreenRecorder = ({
                 const sx = relX * scaleX;
                 const sy = relY * scaleY;
 
-                // Map Source Canvas pixels to Destination Canvas pixels
-                const destX = (sx - srcRect.x) * (cw / srcRect.w);
-                const destY = (sy - srcRect.y) * (ch / srcRect.h);
+                // Map Source Canvas pixels to Destination Canvas pixels (accounting for padding)
+                const destX =
+                  contentX + (sx - srcRect.x) * (contentWidth / srcRect.w);
+                const destY =
+                  contentY + (sy - srcRect.y) * (contentHeight / srcRect.h);
 
                 ctx.save();
                 ctx.beginPath();
@@ -376,16 +465,9 @@ export const useScreenRecorder = ({
                 ctx.stroke();
                 ctx.restore();
               }
-            } else {
-              // Fallback if container not found
-              ctx.fillStyle = "#000";
-              ctx.fillRect(0, 0, cw, ch);
             }
           } else {
             // Screen mode
-            ctx.fillStyle = "#000";
-            ctx.fillRect(0, 0, cw, ch);
-
             const vSw = screenVideo.videoWidth || sw;
             const vSh = screenVideo.videoHeight || sh;
 
@@ -401,7 +483,35 @@ export const useScreenRecorder = ({
             const srcX = (vSw - srcW) / 2;
             const srcY = (vSh - srcH) / 2;
 
-            ctx.drawImage(screenVideo, srcX, srcY, srcW, srcH, 0, 0, cw, ch);
+            // Calculate centered position with padding
+            const contentWidth = cw - padding * 2;
+            const contentHeight = ch - padding * 2;
+            const contentX = padding;
+            const contentY = padding;
+
+            // Draw screen content with rounded corners
+            ctx.save();
+            drawRoundedRectPath(
+              ctx,
+              contentX,
+              contentY,
+              contentWidth,
+              contentHeight,
+              borderRadius,
+            );
+            ctx.clip();
+            ctx.drawImage(
+              screenVideo,
+              srcX,
+              srcY,
+              srcW,
+              srcH,
+              contentX,
+              contentY,
+              contentWidth,
+              contentHeight,
+            );
+            ctx.restore();
           }
 
           if (cameraVideo && cameraVideo.videoWidth) {
@@ -561,6 +671,8 @@ export const useScreenRecorder = ({
     cleanup,
     recordingMode,
     cursorColor,
+    background,
+    borderRadius,
   ]);
 
   const stopRecording = useCallback(() => {

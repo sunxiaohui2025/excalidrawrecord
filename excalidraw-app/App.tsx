@@ -453,6 +453,8 @@ const ExcalidrawWrapper = () => {
     cameraStream,
     recordingMode,
     cursorColor,
+    background,
+    borderRadius,
   });
 
   const recordingDimensions = useRecordingDimensions(aspectRatio);
