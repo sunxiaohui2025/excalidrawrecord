@@ -904,6 +904,62 @@ export const useScreenRecorder = ({
             }
           }
 
+          // Draw watermark - positioned at bottom-right of content area (whiteboard)
+          const watermarkText = "made by 陈恒律师";
+          ctx.save();
+
+          // Watermark styling
+          const fontSize = 20;
+          const paddingX = 16;
+          const paddingY = 10;
+          const watermarkBorderRadius = 20;
+          const watermarkMargin = 16;
+
+          ctx.font = `${fontSize}px Arial, sans-serif`;
+          const textMetrics = ctx.measureText(watermarkText);
+          const textWidth = textMetrics.width;
+          const textHeight = fontSize;
+
+          // Calculate watermark position at bottom-right of content area
+          const watermarkBoxWidth = textWidth + paddingX * 2;
+          const watermarkBoxHeight = textHeight + paddingY * 2;
+          const watermarkBoxX =
+            contentX + contentWidth - watermarkBoxWidth - watermarkMargin;
+          const watermarkBoxY =
+            contentY + contentHeight - watermarkBoxHeight - watermarkMargin;
+
+          // Draw rounded rectangle background with shadow
+          ctx.shadowColor = "rgba(0, 0, 0, 0.15)";
+          ctx.shadowBlur = 8;
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 2;
+
+          ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
+          drawRoundedRectPath(
+            ctx,
+            watermarkBoxX,
+            watermarkBoxY,
+            watermarkBoxWidth,
+            watermarkBoxHeight,
+            watermarkBorderRadius,
+          );
+          ctx.fill();
+
+          // Reset shadow for text
+          ctx.shadowColor = "transparent";
+          ctx.shadowBlur = 0;
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 0;
+
+          // Draw text
+          ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+          ctx.textBaseline = "middle";
+          const textX = watermarkBoxX + paddingX;
+          const textY = watermarkBoxY + watermarkBoxHeight / 2;
+          ctx.fillText(watermarkText, textX, textY);
+
+          ctx.restore();
+
           animationFrameRef.current = requestAnimationFrame(draw);
         };
         draw();
