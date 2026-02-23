@@ -646,30 +646,36 @@ const ExcalidrawWrapper = () => {
   );
 
   // 启动幻灯片录制模式
-  const startSlideshowRecording = useCallback(() => {
+  const startSlideshowRecording = useCallback(async () => {
     const slides = detectSlides();
 
     if (slides.length === 0) {
-      // 没有幻灯片，进入普通录制模式（带倒计时）
       setIsCountingDown(true);
       setCountdownValue(countdown);
       return;
     }
 
-    // 有幻灯片，进入幻灯片录制模式
     setSlideshowSlides(slides);
     setIsSlideshowRecordMode(true);
 
-    // 设置第一个幻灯片的录制区域
     const firstSlideArea = getSlideRecordingArea(slides[0]);
     if (firstSlideArea) {
       setSlideshowRecordingArea(firstSlideArea);
     }
 
-    // 延迟开始录制，等待 UI 渲染
-    setTimeout(() => {
-      startRecording();
-    }, 100);
+    try {
+      const success = await startRecording();
+      if (!success) {
+        setIsSlideshowRecordMode(false);
+        setSlideshowRecordingArea(null);
+        setSlideshowSlides([]);
+      }
+    } catch (error) {
+      console.error("Failed to start recording:", error);
+      setIsSlideshowRecordMode(false);
+      setSlideshowRecordingArea(null);
+      setSlideshowSlides([]);
+    }
   }, [detectSlides, getSlideRecordingArea, startRecording, countdown]);
 
   // 退出幻灯片录制模式

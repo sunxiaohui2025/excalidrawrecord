@@ -5,17 +5,20 @@
 **目的**: 确保录制过程中，用户仍然可以正常操作画布（添加形状、文本、绘图等）。
 
 **步骤**:
+
 1.  打开应用。
 2.  点击录制按钮开始录制。
 3.  在录制框区域内，尝试选择工具栏中的矩形、圆形或文本工具。
 4.  在画布上进行绘制或输入。
 
 **预期结果**:
--   鼠标点击和拖拽操作应直接作用于画布，而不被录制框 (Recording Frame) 阻挡。
--   应该能够顺利添加形状和文本。
+
+- 鼠标点击和拖拽操作应直接作用于画布，而不被录制框 (Recording Frame) 阻挡。
+- 应该能够顺利添加形状和文本。
 
 **修复原理**:
--   在 `components/RecordingControl/RecordingFrame.scss` 中，为 `.recording-frame` 及其子元素添加了 `pointer-events: none;` 属性，使鼠标事件能够穿透录制层，传递给底层的画布。
+
+- 在 `components/RecordingControl/RecordingFrame.scss` 中，为 `.recording-frame` 及其子元素添加了 `pointer-events: none;` 属性，使鼠标事件能够穿透录制层，传递给底层的画布。
 
 ---
 
@@ -24,29 +27,34 @@
 **目的**: 确保录制结束后，视频文件能够自动下载。
 
 **步骤**:
+
 1.  开始录制。
 2.  进行一些操作（如绘制、移动鼠标）。
 3.  点击停止录制按钮。
 
 **预期结果**:
--   浏览器应自动触发文件下载。
--   下载的文件名格式应为 `excalidraw-recording-YYYY-MM-DDTHH:mm:ss.sssZ.extension`。
--   下载的视频文件应能正常播放，且包含录制的内容。
+
+- 浏览器应自动触发文件下载。
+- 下载的文件名格式应为 `excalidraw-recording-YYYY-MM-DDTHH:mm:ss.sssZ.extension`。
+- 下载的视频文件应能正常播放，且包含录制的内容。
 
 **修复原理**:
--   在 `App.tsx` 中，移除了传递给 `useScreenRecorder` 的空 `onStop` 回调函数。
--   `useScreenRecorder` 钩子 (hook) 内部实现了默认的下载逻辑：如果未提供 `onStop` 回调，则会自动生成 Blob URL 并触发下载。
+
+- 在 `App.tsx` 中，移除了传递给 `useScreenRecorder` 的空 `onStop` 回调函数。
+- `useScreenRecorder` 钩子 (hook) 内部实现了默认的下载逻辑：如果未提供 `onStop` 回调，则会自动生成 Blob URL 并触发下载。
 
 ## 3. 验证录制内容 (Recording Content)
 
 **目的**: 确保录制的视频包含预期的内容（屏幕画面、摄像头、光标等）。
 
 **步骤**:
+
 1.  配置录制选项（开启/关闭摄像头，开启/关闭光标）。
 2.  录制一段视频。
 3.  播放下载的视频。
 
 **预期结果**:
--   视频画面应清晰。
--   如果开启了摄像头，应在指定位置显示摄像头画面。
--   如果开启了光标，应显示自定义光标或系统光标。
+
+- 视频画面应清晰。
+- 如果开启了摄像头，应在指定位置显示摄像头画面。
+- 如果开启了光标，应显示自定义光标或系统光标。

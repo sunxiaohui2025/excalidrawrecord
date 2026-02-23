@@ -48,6 +48,12 @@ export const useScreenRecorder = ({
 }: UseScreenRecorderProps = {}) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+
+  // 使用 ref 存储 recordingArea 的最新值，避免闭包问题
+  const recordingAreaRef = useRef(recordingArea);
+  useEffect(() => {
+    recordingAreaRef.current = recordingArea;
+  }, [recordingArea]);
   const [recordingTime, setRecordingTime] = useState(0);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -178,13 +184,12 @@ export const useScreenRecorder = ({
     };
   }, []);
 
-  const startRecording = useCallback(async () => {
+  const startRecording = useCallback(async (): Promise<boolean> => {
     try {
       let displayStream = streamsRef.current.display;
       let isStreamReused = false;
 
       if (recordingMode === "screen") {
-        // Check if we can reuse the existing display stream
         if (
           displayStream &&
           displayStream.active &&
@@ -192,7 +197,6 @@ export const useScreenRecorder = ({
         ) {
           isStreamReused = true;
         } else {
-          // 1. Get Display Stream
           displayStream = await navigator.mediaDevices.getDisplayMedia({
             video: {
               displaySurface: "browser",
@@ -211,7 +215,6 @@ export const useScreenRecorder = ({
         }
       }
 
-      // 2. Get Camera Stream (if needed)
       let cameraStream: MediaStream | null = null;
       if (externalCameraStream) {
         cameraStream = externalCameraStream;
@@ -576,11 +579,12 @@ export const useScreenRecorder = ({
             let srcY = 0;
 
             // 如果指定了录制区域，使用该区域
-            if (recordingArea) {
-              srcX = recordingArea.x;
-              srcY = recordingArea.y;
-              srcW = recordingArea.width;
-              srcH = recordingArea.height;
+            const currentRecordingArea = recordingAreaRef.current;
+            if (currentRecordingArea) {
+              srcX = currentRecordingArea.x;
+              srcY = currentRecordingArea.y;
+              srcW = currentRecordingArea.width;
+              srcH = currentRecordingArea.height;
 
               // 调整画布尺寸为录制区域尺寸
               canvas.width = Math.round(srcW / 2) * 2;
@@ -793,14 +797,14 @@ export const useScreenRecorder = ({
                   canvasContentY +
                   (sy - canvasSrcRect.y) *
                     (canvasContentHeight / canvasSrcRect.h);
-              } else if (recordingArea) {
+              } else if (recordingAreaRef.current) {
                 // 指定录制区域模式
                 const {
                   x: raX,
                   y: raY,
                   width: raW,
                   height: raH,
-                } = recordingArea;
+                } = recordingAreaRef.current;
 
                 // 检查波纹是否在录制区域内
                 if (
@@ -1072,9 +1076,12 @@ export const useScreenRecorder = ({
           cleanup();
         };
       }
+
+      return true;
     } catch (error) {
       console.error("Error starting recording:", error);
       setIsRecording(false);
+      return false;
     }
   }, [
     aspectRatio,
@@ -1095,7 +1102,6 @@ export const useScreenRecorder = ({
     background,
     borderRadius,
     videoFormat,
-    recordingArea,
   ]);
 
   const stopRecording = useCallback(() => {

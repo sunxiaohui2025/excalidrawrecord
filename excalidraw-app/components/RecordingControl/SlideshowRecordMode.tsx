@@ -67,7 +67,6 @@ export const SlideshowRecordMode: React.FC<SlideshowRecordModeProps> = ({
 
   const currentSlide = slides[currentIndex];
 
-  // 计算幻灯片在屏幕上的位置
   const calculateRecordingArea = useCallback(() => {
     if (!currentSlide || !excalidrawAPI) {
       return null;
@@ -90,7 +89,6 @@ export const SlideshowRecordMode: React.FC<SlideshowRecordModeProps> = ({
     const screenWidth = element.width * zoom;
     const screenHeight = element.height * zoom;
 
-    // 查找对应的文字标签元素（在矩形框上方）
     if (currentSlide.labelElementId) {
       const labelElement = elements.find(
         (el) => el.id === currentSlide.labelElementId,
