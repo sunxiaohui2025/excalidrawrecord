@@ -419,6 +419,9 @@ const ExcalidrawWrapper = () => {
     resumeRecording,
     toggleCamera: toggleRecordingCamera,
   } = useScreenRecorder({
+    onStop: () => {
+      // 录制停止时的回调
+    },
     aspectRatio,
     showCamera,
     cameraPosition,
@@ -1144,7 +1147,17 @@ const ExcalidrawWrapper = () => {
           <TeleprompterPanel onClose={() => setShowTeleprompter(false)} />
         )}
 
-        <SlideshowPanel />
+        <SlideshowPanel
+          excalidrawAPI={excalidrawAPI}
+          aspectRatio={aspectRatio}
+          isRecording={isRecording}
+          isPaused={isPaused}
+          pauseRecording={pauseRecording}
+          resumeRecording={resumeRecording}
+          onSlideChange={() => {
+            // 可以在这里处理幻灯片切换事件，例如更新录制区域
+          }}
+        />
 
         <AppMainMenu
           onCollabDialogOpen={onCollabDialogOpen}
