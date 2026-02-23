@@ -2,6 +2,7 @@ import React, { useState, useCallback, useRef, useEffect } from "react";
 import clsx from "clsx";
 
 import { newElement, newTextElement } from "@excalidraw/element";
+import { generateKeyBetween } from "fractional-indexing";
 
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import type { FractionalIndex } from "@excalidraw/element/types";
@@ -43,16 +44,12 @@ const calculateDimensions = (aspectRatio: string) => {
 };
 
 // 生成 fractional index
-// 使用简单的递增策略，确保元素按创建顺序排列
-let globalIndexCounter = 0;
-
+// 使用 Excalidraw 的 fractional indexing 算法
 const generateFractionalIndex = (
   prevIndex: string | null,
   nextIndex: string | null,
 ): FractionalIndex => {
-  // 使用递增的数字作为 index，确保顺序正确
-  globalIndexCounter += 1;
-  return String(globalIndexCounter).padStart(4, "0") as FractionalIndex;
+  return generateKeyBetween(prevIndex, nextIndex) as FractionalIndex;
 };
 
 export const SlideshowPanel = ({
