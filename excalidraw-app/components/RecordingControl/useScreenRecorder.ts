@@ -75,6 +75,14 @@ export const useScreenRecorder = ({
   >([]);
   const rippleIdRef = useRef(0);
 
+  // Fade transition state for slideshow switching
+  const fadeStateRef = useRef<{
+    isFading: boolean;
+    fadeType: "in" | "out" | null;
+    startTime: number;
+    duration: number;
+  }>({ isFading: false, fadeType: null, startTime: 0, duration: 300 });
+
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       mousePosRef.current = { x: e.clientX, y: e.clientY };
@@ -108,6 +116,36 @@ export const useScreenRecorder = ({
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
+  }, []);
+
+  // Start fade out transition
+  const startFadeOut = useCallback(() => {
+    fadeStateRef.current = {
+      isFading: true,
+      fadeType: "out",
+      startTime: Date.now(),
+      duration: 300,
+    };
+  }, []);
+
+  // Start fade in transition
+  const startFadeIn = useCallback(() => {
+    fadeStateRef.current = {
+      isFading: true,
+      fadeType: "in",
+      startTime: Date.now(),
+      duration: 300,
+    };
+  }, []);
+
+  // Clear fade state
+  const clearFade = useCallback(() => {
+    fadeStateRef.current = {
+      isFading: false,
+      fadeType: null,
+      startTime: 0,
+      duration: 300,
+    };
   }, []);
 
   const cleanup = useCallback(() => {
@@ -842,6 +880,30 @@ export const useScreenRecorder = ({
             });
           }
 
+          // Apply fade transition effect
+          const fadeState = fadeStateRef.current;
+          if (fadeState.isFading) {
+            const elapsed = Date.now() - fadeState.startTime;
+            const progress = Math.min(elapsed / fadeState.duration, 1);
+
+            let opacity = 1;
+            if (fadeState.fadeType === "out") {
+              opacity = 1 - progress * 0.7; // Fade to 0.3
+            } else if (fadeState.fadeType === "in") {
+              opacity = 0.3 + progress * 0.7; // Fade from 0.3 to 1
+            }
+
+            ctx.save();
+            ctx.fillStyle = `rgba(0, 0, 0, ${1 - opacity})`;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.restore();
+
+            // If fade is complete, clear the fade state
+            if (progress >= 1) {
+              fadeStateRef.current.isFading = false;
+            }
+          }
+
           animationFrameRef.current = requestAnimationFrame(draw);
         };
         draw();
@@ -1042,5 +1104,8 @@ export const useScreenRecorder = ({
     pauseRecording,
     resumeRecording,
     toggleCamera,
+    startFadeOut,
+    startFadeIn,
+    clearFade,
   };
 };

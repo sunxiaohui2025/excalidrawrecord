@@ -433,6 +433,9 @@ const ExcalidrawWrapper = () => {
     pauseRecording,
     resumeRecording,
     toggleCamera: toggleRecordingCamera,
+    startFadeOut,
+    startFadeIn,
+    clearFade,
   } = useScreenRecorder({
     aspectRatio,
     showCamera,
@@ -1358,6 +1361,9 @@ const ExcalidrawWrapper = () => {
             stopRecording={stopRecording}
             onExit={exitSlideshowRecordMode}
             aspectRatio={aspectRatio}
+            startFadeOut={startFadeOut}
+            startFadeIn={startFadeIn}
+            clearFade={clearFade}
           />
         )}
 

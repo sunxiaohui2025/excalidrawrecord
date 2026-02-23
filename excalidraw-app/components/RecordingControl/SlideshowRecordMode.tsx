@@ -30,6 +30,9 @@ interface SlideshowRecordModeProps {
   stopRecording: () => void;
   onExit: () => void;
   aspectRatio: string;
+  startFadeOut?: () => void;
+  startFadeIn?: () => void;
+  clearFade?: () => void;
 }
 
 const formatTime = (seconds: number) => {
@@ -49,6 +52,9 @@ export const SlideshowRecordMode: React.FC<SlideshowRecordModeProps> = ({
   stopRecording,
   onExit,
   aspectRatio,
+  startFadeOut,
+  startFadeIn,
+  clearFade,
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isSwitching, setIsSwitching] = useState(false);
@@ -157,7 +163,7 @@ export const SlideshowRecordMode: React.FC<SlideshowRecordModeProps> = ({
     [excalidrawAPI, slides],
   );
 
-  // 切换到指定幻灯片
+  // 执行幻灯片切换（带录制淡出淡入效果，不暂停录制）
   const switchToSlide = useCallback(
     async (newIndex: number) => {
       if (
@@ -171,37 +177,45 @@ export const SlideshowRecordMode: React.FC<SlideshowRecordModeProps> = ({
 
       setIsSwitching(true);
 
-      // 如果正在录制，先暂停
-      if (isRecording && !isPaused) {
-        pauseRecording();
+      // 第一步：开始淡出（200ms）
+      if (isRecording && startFadeOut) {
+        startFadeOut();
       }
 
-      // 切换幻灯片
+      // 等待淡出到一半时开始切换
+      await new Promise((resolve) => setTimeout(resolve, 150));
+
+      // 切换幻灯片（录制继续）
       setCurrentIndex(newIndex);
       scrollToSlide(newIndex);
 
-      // 等待滚动动画完成
-      if (switchingTimeoutRef.current) {
-        clearTimeout(switchingTimeoutRef.current);
+      // 等待滚动动画和淡出完成
+      await new Promise((resolve) => setTimeout(resolve, 200));
+
+      // 第二步：开始淡入（200ms）
+      if (isRecording && startFadeIn) {
+        startFadeIn();
       }
 
-      switchingTimeoutRef.current = setTimeout(() => {
-        // 恢复录制
-        if (isRecording && isPaused) {
-          resumeRecording();
-        }
-        setIsSwitching(false);
-      }, 600);
+      // 等待淡入完成
+      await new Promise((resolve) => setTimeout(resolve, 200));
+
+      // 清除淡出状态
+      if (clearFade) {
+        clearFade();
+      }
+
+      setIsSwitching(false);
     },
     [
       currentIndex,
       slides.length,
       isSwitching,
       isRecording,
-      isPaused,
-      pauseRecording,
-      resumeRecording,
       scrollToSlide,
+      startFadeOut,
+      startFadeIn,
+      clearFade,
     ],
   );
 
@@ -325,9 +339,10 @@ export const SlideshowRecordMode: React.FC<SlideshowRecordModeProps> = ({
 
   // 清理定时器
   useEffect(() => {
+    const timeoutRef = switchingTimeoutRef.current;
     return () => {
-      if (switchingTimeoutRef.current) {
-        clearTimeout(switchingTimeoutRef.current);
+      if (timeoutRef) {
+        clearTimeout(timeoutRef);
       }
     };
   }, []);
