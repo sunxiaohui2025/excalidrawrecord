@@ -420,9 +420,6 @@ const ExcalidrawWrapper = () => {
     resumeRecording,
     toggleCamera: toggleRecordingCamera,
   } = useScreenRecorder({
-    onStop: () => {
-      // 录制停止时的回调
-    },
     aspectRatio,
     showCamera,
     cameraPosition,
