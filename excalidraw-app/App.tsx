@@ -585,7 +585,7 @@ const ExcalidrawWrapper = () => {
     });
   }, [excalidrawAPI]);
 
-  // 获取幻灯片的录制区域（只包含矩形框，不包含文字标签）
+  // 获取幻灯片的录制区域（只包含矩形框内部，排除文字标签）
   const getSlideRecordingArea = useCallback(
     (slide: Slide) => {
       if (!excalidrawAPI) {
@@ -603,38 +603,14 @@ const ExcalidrawWrapper = () => {
       const appState = excalidrawAPI.getAppState();
       const zoom = appState.zoom.value;
 
-      // 计算矩形框在屏幕上的像素位置
+      // 计算矩形框在屏幕上的像素位置（只录制矩形框内部）
       const screenX = (element.x + appState.scrollX) * zoom;
       const screenY = (element.y + appState.scrollY) * zoom;
       const screenWidth = element.width * zoom;
       const screenHeight = element.height * zoom;
 
-      // 查找对应的文字标签元素（在矩形框上方）
-      if (slide.labelElementId) {
-        const labelElement = elements.find(
-          (el) => el.id === slide.labelElementId,
-        );
-        if (labelElement && !labelElement.isDeleted) {
-          // 计算文字标签的屏幕位置
-          const labelScreenY = (labelElement.y + appState.scrollY) * zoom;
-          const labelHeight = labelElement.height * zoom;
-
-          // 如果文字标签在矩形框上方，调整录制区域的 y 坐标和高度
-          if (labelScreenY + labelHeight < screenY) {
-            // 文字标签在矩形框上方，从文字标签底部开始录制
-            const adjustedY = labelScreenY + labelHeight;
-            const adjustedHeight = screenY + screenHeight - adjustedY;
-
-            return {
-              x: screenX,
-              y: adjustedY,
-              width: screenWidth,
-              height: adjustedHeight,
-            };
-          }
-        }
-      }
-
+      // 直接返回矩形框的区域，不考虑文字标签
+      // 这样文字标签不会被录制进去
       return {
         x: screenX,
         y: screenY,
