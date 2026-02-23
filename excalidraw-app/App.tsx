@@ -28,6 +28,7 @@ import {
   resolvablePromise,
   isRunningInIframe,
   isDevEnv,
+  COLOR_PALETTE,
 } from "@excalidraw/common";
 import polyfill from "@excalidraw/excalidraw/polyfill";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -652,6 +653,12 @@ const ExcalidrawWrapper = () => {
     initializeScene({ collabAPI, excalidrawAPI }).then(async (data) => {
       loadImages(data, /* isInitialLoad */ true);
       initialStatePromiseRef.current.promise.resolve(data.scene);
+      excalidrawAPI.updateScene({
+        appState: {
+          currentItemStrokeColor: COLOR_PALETTE.black,
+          currentItemBackgroundColor: COLOR_PALETTE.transparent,
+        },
+      });
     });
 
     const onHashChange = async (event: HashChangeEvent) => {
