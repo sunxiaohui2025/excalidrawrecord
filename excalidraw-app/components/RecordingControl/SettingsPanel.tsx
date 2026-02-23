@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import clsx from "clsx";
 
 import {
@@ -31,6 +31,10 @@ interface SettingsPanelProps {
   setShowCursor: (show: boolean) => void;
   cursorColor: string;
   setCursorColor: (color: string) => void;
+  cursorSize: number;
+  setCursorSize: (size: number) => void;
+  cursorRippleSize: number;
+  setCursorRippleSize: (size: number) => void;
   cameraPosition: "top-left" | "top-right" | "bottom-left" | "bottom-right";
   setCameraPosition: (
     position: "top-left" | "top-right" | "bottom-left" | "bottom-right",
@@ -200,6 +204,10 @@ export const SettingsPanel = ({
   setShowCursor,
   cursorColor,
   setCursorColor,
+  cursorSize,
+  setCursorSize,
+  cursorRippleSize,
+  setCursorRippleSize,
   cameraPosition,
   setCameraPosition,
   cameraSize,
@@ -216,6 +224,29 @@ export const SettingsPanel = ({
     "recording",
     "appearance",
   ]);
+
+  // Preview cursor ripple state
+  const [previewRipples, setPreviewRipples] = useState<
+    Array<{ id: number; startTime: number }>
+  >([]);
+
+  const handlePreviewCursorClick = useCallback(() => {
+    const id = Date.now();
+    setPreviewRipples((prev) => [...prev, { id, startTime: Date.now() }]);
+  }, []);
+
+  useEffect(() => {
+    if (previewRipples.length === 0) {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      const now = Date.now();
+      setPreviewRipples((prev) => prev.filter((r) => now - r.startTime < 600));
+    }, 50);
+
+    return () => clearInterval(interval);
+  }, [previewRipples]);
 
   const toggleSection = (section: string) => {
     setOpenSections((prev) =>
@@ -276,7 +307,6 @@ export const SettingsPanel = ({
                 }}
               >
                 <div className="skeleton-line title"></div>
-                <div className="skeleton-circle"></div>
                 <div className="skeleton-line text"></div>
                 <div className="skeleton-line text short"></div>
               </div>
@@ -285,12 +315,42 @@ export const SettingsPanel = ({
                 style={{
                   backgroundColor: `${cursorColor}33`,
                   borderColor: cursorColor,
+                  width: cursorSize * 2 + 4,
+                  height: cursorSize * 2 + 4,
                 }}
+                onClick={handlePreviewCursorClick}
+                title="点击预览波纹效果"
               >
                 <div
                   className="cursor-dot"
-                  style={{ backgroundColor: cursorColor }}
+                  style={{
+                    backgroundColor: cursorColor,
+                    width: cursorSize * 2,
+                    height: cursorSize * 2,
+                  }}
                 ></div>
+                {previewRipples.map((ripple) => {
+                  const progress = (Date.now() - ripple.startTime) / 600;
+                  const opacity = 1 - progress;
+                  const scale = 1 + progress * (cursorRippleSize - 1);
+                  return (
+                    <div
+                      key={ripple.id}
+                      className="preview-ripple"
+                      style={{
+                        backgroundColor: `${cursorColor}${Math.floor(
+                          opacity * 128,
+                        )
+                          .toString(16)
+                          .padStart(2, "0")}`,
+                        borderColor: `${cursorColor}${Math.floor(opacity * 255)
+                          .toString(16)
+                          .padStart(2, "0")}`,
+                        transform: `translate(-50%, -50%) scale(${scale})`,
+                      }}
+                    />
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -564,27 +624,67 @@ export const SettingsPanel = ({
               </div>
 
               {showCursor && (
-                <div className="control-group">
-                  <label>光标颜色</label>
-                  <div className="color-picker-row">
-                    <div className="color-swatches">
-                      {CURSOR_COLORS.map((color) => (
-                        <button
-                          key={color}
-                          className={clsx("color-swatch", {
-                            active: cursorColor === color,
-                          })}
-                          style={{ backgroundColor: color }}
-                          onClick={() => setCursorColor(color)}
-                        >
-                          {cursorColor === color && (
-                            <div className="swatch-check"></div>
-                          )}
-                        </button>
-                      ))}
+                <>
+                  <div className="control-group">
+                    <label>光标颜色</label>
+                    <div className="color-picker-row">
+                      <div className="color-swatches">
+                        {CURSOR_COLORS.map((color) => (
+                          <button
+                            key={color}
+                            className={clsx("color-swatch", {
+                              active: cursorColor === color,
+                            })}
+                            style={{ backgroundColor: color }}
+                            onClick={() => setCursorColor(color)}
+                          >
+                            {cursorColor === color && (
+                              <div className="swatch-check"></div>
+                            )}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
+
+                  <div className="control-group">
+                    <div className="label-row">
+                      <label>光标大小</label>
+                      <span className="label-hint right">{cursorSize}px</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="8"
+                      max="30"
+                      step="1"
+                      value={cursorSize}
+                      onChange={(e) => setCursorSize(parseInt(e.target.value))}
+                      className="styled-slider"
+                    />
+                    <p className="control-hint">调整录制中鼠标光标的大小</p>
+                  </div>
+
+                  <div className="control-group">
+                    <div className="label-row">
+                      <label>波纹扩散范围</label>
+                      <span className="label-hint right">
+                        {cursorRippleSize}x
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="2"
+                      max="8"
+                      step="0.5"
+                      value={cursorRippleSize}
+                      onChange={(e) =>
+                        setCursorRippleSize(parseFloat(e.target.value))
+                      }
+                      className="styled-slider"
+                    />
+                    <p className="control-hint">调整点击波纹的最大扩散倍数</p>
+                  </div>
+                </>
               )}
             </CollapsibleSection>
 

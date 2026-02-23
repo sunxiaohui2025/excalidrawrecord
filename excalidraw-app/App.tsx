@@ -396,6 +396,8 @@ const ExcalidrawWrapper = () => {
   const [cameraSize, setCameraSize] = useState(200);
   const [showCursor, setShowCursor] = useState(true);
   const [cursorColor, setCursorColor] = useState("#f03e3e");
+  const [cursorSize, setCursorSize] = useState(10);
+  const [cursorRippleSize, setCursorRippleSize] = useState(4);
   const [recordingMode, setRecordingMode] = useState<"screen" | "canvas">(
     "canvas",
   );
@@ -425,6 +427,8 @@ const ExcalidrawWrapper = () => {
     cameraStream,
     recordingMode,
     cursorColor,
+    cursorSize,
+    cursorRippleSize,
     background,
     borderRadius,
     videoFormat,
@@ -1077,6 +1081,10 @@ const ExcalidrawWrapper = () => {
             setShowCursor={setShowCursor}
             cursorColor={cursorColor}
             setCursorColor={setCursorColor}
+            cursorSize={cursorSize}
+            setCursorSize={setCursorSize}
+            cursorRippleSize={cursorRippleSize}
+            setCursorRippleSize={setCursorRippleSize}
             cameraPosition={cameraPosition}
             setCameraPosition={setCameraPosition}
             cameraSize={cameraSize}
@@ -1094,6 +1102,10 @@ const ExcalidrawWrapper = () => {
           visible={isRecording || isCountingDown}
           aspectRatio={aspectRatio}
           countdown={isCountingDown ? countdownValue : undefined}
+          showCursor={showCursor}
+          cursorColor={cursorColor}
+          cursorSize={cursorSize}
+          cursorRippleSize={cursorRippleSize}
         />
 
         <CameraOverlay

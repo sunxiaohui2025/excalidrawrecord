@@ -141,6 +141,7 @@ export const ControlMenu = ({
           onClick={onToggleCursor}
           title={showCursor ? "隐藏光标" : "显示光标"}
           style={{ color: showCursor ? cursorColor : undefined }}
+          disabled
         >
           {CursorIcon}
         </button>
@@ -149,6 +150,7 @@ export const ControlMenu = ({
           className={clsx("control-btn", { active: showCamera })}
           onClick={onToggleCamera}
           title={showCamera ? "关闭摄像头" : "开启摄像头"}
+          disabled
         >
           {CameraIcon}
         </button>

@@ -13,6 +13,8 @@ interface UseScreenRecorderProps {
   cameraStream?: MediaStream | null;
   recordingMode?: "screen" | "canvas"; // 'screen' = getDisplayMedia, 'canvas' = DOM canvas capture
   cursorColor?: string;
+  cursorSize?: number;
+  cursorRippleSize?: number;
   background?: string;
   borderRadius?: number;
   videoFormat?: VideoFormat;
@@ -29,6 +31,8 @@ export const useScreenRecorder = ({
   cameraStream: externalCameraStream = null,
   recordingMode = "screen",
   cursorColor = "#f03e3e",
+  cursorSize = 10,
+  cursorRippleSize = 4,
   background = "#000000",
   borderRadius = 0,
   videoFormat = "webm",
@@ -56,13 +60,33 @@ export const useScreenRecorder = ({
 
   const mousePosRef = useRef({ x: 0, y: 0 });
 
+  // Ripple animation state
+  const ripplesRef = useRef<
+    Array<{ x: number; y: number; startTime: number; id: number }>
+  >([]);
+  const rippleIdRef = useRef(0);
+
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       mousePosRef.current = { x: e.clientX, y: e.clientY };
     };
+    const handleMouseDown = (e: MouseEvent) => {
+      if (isRecording) {
+        ripplesRef.current.push({
+          x: e.clientX,
+          y: e.clientY,
+          startTime: Date.now(),
+          id: rippleIdRef.current++,
+        });
+      }
+    };
     window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
+    window.addEventListener("mousedown", handleMouseDown);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mousedown", handleMouseDown);
+    };
+  }, [isRecording]);
 
   const startTimer = useCallback(() => {
     timerRef.current = window.setInterval(() => {
@@ -125,7 +149,7 @@ export const useScreenRecorder = ({
           displayStream = await navigator.mediaDevices.getDisplayMedia({
             video: {
               displaySurface: "browser",
-              cursor: showCursor ? "always" : "never",
+              cursor: "never", // Always hide system cursor, we'll draw custom cursor
               selfBrowserSurface: "include",
               surfaceSwitching: "include",
               preferCurrentTab: true,
@@ -280,6 +304,10 @@ export const useScreenRecorder = ({
       canvas.width = cw;
       canvas.height = ch;
 
+      // Note: We don't hide the system cursor on the original canvas
+      // The custom cursor is only drawn on the recording canvas
+      // User can still see their system cursor while recording
+
       // Helper function to draw rounded rectangle path
       const drawRoundedRectPath = (
         ctx: CanvasRenderingContext2D,
@@ -363,16 +391,28 @@ export const useScreenRecorder = ({
           // Clear with user configured background (gradient or color)
           applyBackground(ctx, cw, ch, background);
 
+          // Variables for coordinate mapping (used by cursor and ripples)
+          let canvasScaleX = 1;
+          let canvasScaleY = 1;
+          let canvasRect = { left: 0, top: 0, width: cw, height: ch };
+          let canvasSrcRect = { x: 0, y: 0, w: cw, h: ch };
+          let canvasContentX = padding;
+          let canvasContentY = padding;
+          let canvasContentWidth = cw - padding * 2;
+          let canvasContentHeight = ch - padding * 2;
+
+          // Common content dimensions for both modes
+          const contentWidth = cw - padding * 2;
+          const contentHeight = ch - padding * 2;
+          const contentX = padding;
+          const contentY = padding;
+
           if (recordingMode === "canvas") {
             // Find all canvases in excalidraw container and draw them
             const container = document.querySelector(".excalidraw");
-            let srcRect = { x: 0, y: 0, w: cw, h: ch }; // Default fallback
 
             if (container) {
               const canvases = container.querySelectorAll("canvas");
-              let scaleX = 1;
-              let scaleY = 1;
-              let cRect = { left: 0, top: 0, width: cw, height: ch };
 
               if (canvases.length > 0) {
                 // Calculate crop based on first canvas (assume all same size)
@@ -382,9 +422,9 @@ export const useScreenRecorder = ({
 
                 // Calculate scale factor for cursor mapping
                 const rect = c0.getBoundingClientRect();
-                cRect = rect;
-                scaleX = cSw / rect.width;
-                scaleY = cSh / rect.height;
+                canvasRect = rect;
+                canvasScaleX = cSw / rect.width;
+                canvasScaleY = cSh / rect.height;
 
                 let srcW = cSw;
                 let srcH = cSh;
@@ -395,7 +435,7 @@ export const useScreenRecorder = ({
                   srcH = srcW / targetRatio;
                 }
 
-                srcRect = {
+                canvasSrcRect = {
                   x: (cSw - srcW) / 2,
                   y: (cSh - srcH) / 2,
                   w: srcW,
@@ -404,38 +444,43 @@ export const useScreenRecorder = ({
               }
 
               // Calculate centered position with padding
-              const contentWidth = cw - padding * 2;
-              const contentHeight = ch - padding * 2;
-              const contentX = padding;
-              const contentY = padding;
+              canvasContentWidth = cw - padding * 2;
+              canvasContentHeight = ch - padding * 2;
+              canvasContentX = padding;
+              canvasContentY = padding;
 
               // Draw content with rounded corners
               ctx.save();
               drawRoundedRectPath(
                 ctx,
-                contentX,
-                contentY,
-                contentWidth,
-                contentHeight,
+                canvasContentX,
+                canvasContentY,
+                canvasContentWidth,
+                canvasContentHeight,
                 borderRadius,
               );
               ctx.clip();
 
               // Fill with white background for content area
               ctx.fillStyle = "#ffffff";
-              ctx.fillRect(contentX, contentY, contentWidth, contentHeight);
+              ctx.fillRect(
+                canvasContentX,
+                canvasContentY,
+                canvasContentWidth,
+                canvasContentHeight,
+              );
 
               canvases.forEach((c) => {
                 ctx.drawImage(
                   c,
-                  srcRect.x,
-                  srcRect.y,
-                  srcRect.w,
-                  srcRect.h,
-                  contentX,
-                  contentY,
-                  contentWidth,
-                  contentHeight,
+                  canvasSrcRect.x,
+                  canvasSrcRect.y,
+                  canvasSrcRect.w,
+                  canvasSrcRect.h,
+                  canvasContentX,
+                  canvasContentY,
+                  canvasContentWidth,
+                  canvasContentHeight,
                 );
               });
 
@@ -445,22 +490,26 @@ export const useScreenRecorder = ({
                 const { x: clientX, y: clientY } = mousePosRef.current;
 
                 // Map Client Mouse to Canvas Element relative position
-                const relX = clientX - cRect.left;
-                const relY = clientY - cRect.top;
+                const relX = clientX - canvasRect.left;
+                const relY = clientY - canvasRect.top;
 
                 // Map to Internal Canvas pixels
-                const sx = relX * scaleX;
-                const sy = relY * scaleY;
+                const sx = relX * canvasScaleX;
+                const sy = relY * canvasScaleY;
 
                 // Map Source Canvas pixels to Destination Canvas pixels (accounting for padding)
                 const destX =
-                  contentX + (sx - srcRect.x) * (contentWidth / srcRect.w);
+                  canvasContentX +
+                  (sx - canvasSrcRect.x) *
+                    (canvasContentWidth / canvasSrcRect.w);
                 const destY =
-                  contentY + (sy - srcRect.y) * (contentHeight / srcRect.h);
+                  canvasContentY +
+                  (sy - canvasSrcRect.y) *
+                    (canvasContentHeight / canvasSrcRect.h);
 
                 ctx.save();
                 ctx.beginPath();
-                ctx.arc(destX, destY, 10, 0, Math.PI * 2);
+                ctx.arc(destX, destY, cursorSize, 0, Math.PI * 2);
                 ctx.fillStyle = `${cursorColor}80`; // add transparency
                 ctx.fill();
                 ctx.strokeStyle = "white";
@@ -486,12 +535,6 @@ export const useScreenRecorder = ({
             const srcX = (vSw - srcW) / 2;
             const srcY = (vSh - srcH) / 2;
 
-            // Calculate centered position with padding
-            const contentWidth = cw - padding * 2;
-            const contentHeight = ch - padding * 2;
-            const contentX = padding;
-            const contentY = padding;
-
             // Draw screen content with rounded corners
             ctx.save();
             drawRoundedRectPath(
@@ -515,6 +558,30 @@ export const useScreenRecorder = ({
               contentHeight,
             );
             ctx.restore();
+
+            // Draw custom cursor in screen mode
+            if (showCursor) {
+              const { x: clientX, y: clientY } = mousePosRef.current;
+
+              // Map screen coordinates to canvas coordinates
+              const relX = clientX / window.screen.width;
+              const relY = clientY / window.screen.height;
+
+              const destX =
+                contentX + (relX * vSw - srcX) * (contentWidth / srcW);
+              const destY =
+                contentY + (relY * vSh - srcY) * (contentHeight / srcH);
+
+              ctx.save();
+              ctx.beginPath();
+              ctx.arc(destX, destY, cursorSize, 0, Math.PI * 2);
+              ctx.fillStyle = `${cursorColor}80`; // add transparency
+              ctx.fill();
+              ctx.strokeStyle = "white";
+              ctx.lineWidth = 2;
+              ctx.stroke();
+              ctx.restore();
+            }
           }
 
           // Draw camera overlay
@@ -575,6 +642,105 @@ export const useScreenRecorder = ({
             ctx.lineWidth = 4;
             ctx.strokeStyle = "#ffffff";
             ctx.stroke();
+          }
+
+          // Draw click ripples - use same coordinate mapping as cursor
+          if (ripplesRef.current.length > 0) {
+            const now = Date.now();
+            const rippleDuration = 600; // ms
+
+            ripplesRef.current = ripplesRef.current.filter(
+              (ripple) => now - ripple.startTime < rippleDuration,
+            );
+
+            ripplesRef.current.forEach((ripple) => {
+              const progress = (now - ripple.startTime) / rippleDuration;
+              const maxRadius = cursorSize * cursorRippleSize;
+              const currentRadius = maxRadius * progress;
+              const opacity = 1 - progress;
+
+              // Map screen coordinates to canvas coordinates (same logic as cursor)
+              let rippleX;
+              let rippleY;
+
+              if (recordingMode === "canvas") {
+                // Use same coordinate mapping as cursor drawing
+                const relX = ripple.x - canvasRect.left;
+                const relY = ripple.y - canvasRect.top;
+
+                // Map to Internal Canvas pixels
+                const sx = relX * canvasScaleX;
+                const sy = relY * canvasScaleY;
+
+                // Map Source Canvas pixels to Destination Canvas pixels
+                rippleX =
+                  canvasContentX +
+                  (sx - canvasSrcRect.x) *
+                    (canvasContentWidth / canvasSrcRect.w);
+                rippleY =
+                  canvasContentY +
+                  (sy - canvasSrcRect.y) *
+                    (canvasContentHeight / canvasSrcRect.h);
+              } else {
+                // Screen mode - use same logic as cursor drawing
+                const vSw = screenVideo.videoWidth || sw;
+                const vSh = screenVideo.videoHeight || sh;
+
+                let srcW = vSw;
+                let srcH = vSh;
+
+                if (srcW / srcH > targetRatio) {
+                  srcW = srcH * targetRatio;
+                } else {
+                  srcH = srcW / targetRatio;
+                }
+
+                const srcX = (vSw - srcW) / 2;
+                const srcY = (vSh - srcH) / 2;
+
+                // Map screen coordinates to canvas coordinates
+                const relX = ripple.x / window.screen.width;
+                const relY = ripple.y / window.screen.height;
+
+                rippleX =
+                  contentX + (relX * vSw - srcX) * (contentWidth / srcW);
+                rippleY =
+                  contentY + (relY * vSh - srcY) * (contentHeight / srcH);
+              }
+
+              // Draw ripple
+              ctx.save();
+              ctx.beginPath();
+              ctx.arc(rippleX, rippleY, currentRadius, 0, Math.PI * 2);
+              const gradient = ctx.createRadialGradient(
+                rippleX,
+                rippleY,
+                0,
+                rippleX,
+                rippleY,
+                currentRadius,
+              );
+              gradient.addColorStop(0, `${cursorColor}00`);
+              gradient.addColorStop(
+                0.5,
+                `${cursorColor}${Math.floor(opacity * 128)
+                  .toString(16)
+                  .padStart(2, "0")}`,
+              );
+              gradient.addColorStop(1, `${cursorColor}00`);
+              ctx.fillStyle = gradient;
+              ctx.fill();
+
+              // Draw ring
+              ctx.beginPath();
+              ctx.arc(rippleX, rippleY, currentRadius, 0, Math.PI * 2);
+              ctx.strokeStyle = `${cursorColor}${Math.floor(opacity * 255)
+                .toString(16)
+                .padStart(2, "0")}`;
+              ctx.lineWidth = 2;
+              ctx.stroke();
+              ctx.restore();
+            });
           }
 
           animationFrameRef.current = requestAnimationFrame(draw);
@@ -647,6 +813,13 @@ export const useScreenRecorder = ({
         setIsPaused(false);
         setRecordingTime(0);
 
+        // Restore original canvas cursor
+        const styleId = "recording-hide-cursor";
+        const styleEl = document.getElementById(styleId);
+        if (styleEl) {
+          styleEl.remove();
+        }
+
         // DO NOT cleanup streams here to allow reuse
         // cleanup();
 
@@ -700,6 +873,8 @@ export const useScreenRecorder = ({
     cleanup,
     recordingMode,
     cursorColor,
+    cursorSize,
+    cursorRippleSize,
     background,
     borderRadius,
     videoFormat,

@@ -79,6 +79,19 @@
         color: #1890ff;
       }
 
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+
+        &:hover {
+          background: #f0f0f0;
+        }
+
+        &.active {
+          background: #e6f7ff;
+        }
+      }
+
       &.stop-btn {
         background: #fff1f0;
         color: #ff4d4f;

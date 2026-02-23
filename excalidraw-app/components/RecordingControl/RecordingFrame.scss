@@ -15,6 +15,11 @@
     justify-content: center;
     align-items: flex-start;
 
+    /* Hide system cursor only when mouse is inside recording frame */
+    &.hide-cursor {
+      cursor: none;
+    }
+
     .recording-label {
       background: rgba(255, 59, 48, 0.9);
       color: white;
@@ -44,10 +49,32 @@
         font-size: 100px;
         font-weight: 700;
         color: #fff;
-        text-shadow: 0 0 30px rgba(255, 77, 79, 1), 0 0 60px rgba(255, 77, 79, 0.5);
+        text-shadow: 0 0 30px rgba(255, 77, 79, 1),
+          0 0 60px rgba(255, 77, 79, 0.5);
         animation: countdownPulse 1s ease-in-out;
         line-height: 1;
       }
+    }
+
+    /* Custom cursor styles */
+    .custom-cursor {
+      position: fixed;
+      border-radius: 50%;
+      border: 2px solid white;
+      pointer-events: none;
+      z-index: 10000;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Ripple effect styles */
+    .ripple-effect {
+      position: fixed;
+      border-radius: 50%;
+      border: 2px solid;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
     }
   }
 }
