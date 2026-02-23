@@ -9,29 +9,35 @@ interface TeleprompterPanelProps {
 
 export const TeleprompterPanel = ({ onClose }: TeleprompterPanelProps) => {
   const [position, setPosition] = useState({
-    x: window.innerWidth - 350,
-    y: 200,
+    x: window.innerWidth - 400,
+    y: 100,
   });
+
   const [isPlaying, setIsPlaying] = useState(false);
-  const [speed, setSpeed] = useState(1);
+  const [speed, setSpeed] = useState(50);
   const [opacity, setOpacity] = useState(0.9);
   const [text, setText] = useState(
     "在此输入提词内容...\n\n你可以调整播放速度和透明度。\n\n点击播放按钮开始滚动。",
   );
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const draggingRef = useRef(false);
   const offsetRef = useRef({ x: 0, y: 0 });
   const animationFrameRef = useRef<number | null>(null);
 
+  // Handle auto-scroll when playing
   useEffect(() => {
-    if (isPlaying) {
+    if (isPlaying && textareaRef.current) {
       const scroll = () => {
         if (textareaRef.current) {
-          textareaRef.current.scrollTop += speed * 0.5;
+          const scrollSpeed = (speed / 100) * 2;
+          textareaRef.current.scrollTop += scrollSpeed;
+
+          // Check if reached the end
           if (
             textareaRef.current.scrollTop + textareaRef.current.clientHeight >=
-            textareaRef.current.scrollHeight
+            textareaRef.current.scrollHeight - 5
           ) {
             setIsPlaying(false);
             return;
@@ -44,6 +50,7 @@ export const TeleprompterPanel = ({ onClose }: TeleprompterPanelProps) => {
       cancelAnimationFrame(animationFrameRef.current);
       animationFrameRef.current = null;
     }
+
     return () => {
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
@@ -52,6 +59,7 @@ export const TeleprompterPanel = ({ onClose }: TeleprompterPanelProps) => {
     };
   }, [isPlaying, speed]);
 
+  // Handle drag functionality
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (draggingRef.current) {
@@ -76,9 +84,48 @@ export const TeleprompterPanel = ({ onClose }: TeleprompterPanelProps) => {
     };
   }, []);
 
+  // Handle wheel event to prevent bubbling to canvas and ensure textarea scrolling works
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    const panel = panelRef.current;
+    if (!textarea || !panel) {
+      return;
+    }
+
+    const handleNativeWheel = (e: WheelEvent) => {
+      // Stop propagation to prevent canvas from scrolling
+      e.stopPropagation();
+      // Do NOT prevent default - allow the textarea to handle scrolling normally
+    };
+
+    // Use capture phase to intercept event before it bubbles to canvas
+    textarea.addEventListener("wheel", handleNativeWheel, { capture: true });
+    panel.addEventListener("wheel", handleNativeWheel, { capture: true });
+
+    return () => {
+      textarea.removeEventListener("wheel", handleNativeWheel, {
+        capture: true,
+      });
+      panel.removeEventListener("wheel", handleNativeWheel, { capture: true });
+    };
+  }, []);
+
   const handleMouseDown = (e: React.MouseEvent) => {
     // Only allow dragging from header
-    if (!(e.target as HTMLElement).closest(".panel-header")) {
+    const target = e.target as HTMLElement;
+
+    // Don't allow dragging from controls (buttons, sliders, close button)
+    if (
+      target.closest(".scroll-toggle") ||
+      target.closest(".slider-group") ||
+      target.closest(".close-btn") ||
+      target.closest("input[type='range']")
+    ) {
+      return;
+    }
+
+    // Only allow dragging from header area
+    if (!target.closest(".panel-header")) {
       return;
     }
 
@@ -90,65 +137,87 @@ export const TeleprompterPanel = ({ onClose }: TeleprompterPanelProps) => {
     document.body.style.userSelect = "none";
   };
 
+  const handlePlayToggle = () => {
+    setIsPlaying(!isPlaying);
+  };
+
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setText(e.target.value);
+  };
+
+  // Handle wheel event to prevent bubbling to canvas
+  const handleWheel = (e: React.WheelEvent) => {
+    // Only stop propagation, don't prevent default to allow textarea scrolling
+    e.stopPropagation();
+  };
+
   return (
     <div
+      ref={panelRef}
       className="teleprompter-panel"
       style={{
         left: position.x,
         top: position.y,
-        backgroundColor: `rgba(255, 255, 255, ${opacity})`,
+        ["--teleprompter-opacity" as string]: opacity,
       }}
       onMouseDown={handleMouseDown}
     >
       <div className="panel-header">
-        <h3>提词器</h3>
-        <button onClick={onClose} title="关闭">
-          {CloseIcon}
-        </button>
-      </div>
-
-      <div className="panel-content">
-        <textarea
-          ref={textareaRef}
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="输入提词内容..."
-          disabled={isPlaying}
-        />
-      </div>
-
-      <div className="panel-footer">
-        <button
-          className="play-btn"
-          onClick={() => setIsPlaying(!isPlaying)}
-          title={isPlaying ? "暂停" : "播放"}
-        >
-          {isPlaying ? PauseIcon : PlayIcon}
-        </button>
-
-        <div className="speed-control">
-          <span>速度</span>
-          <input
-            type="range"
-            min="1"
-            max="10"
-            step="0.5"
-            value={speed}
-            onChange={(e) => setSpeed(parseFloat(e.target.value))}
-          />
+        <div className="header-title-row">
+          <h3>提词器</h3>
+          <button className="close-btn" onClick={onClose} title="关闭">
+            {CloseIcon}
+          </button>
         </div>
-
-        <div className="opacity-control" title="透明度">
-          <input
-            type="range"
-            min="0.2"
-            max="1"
-            step="0.1"
-            value={opacity}
-            onChange={(e) => setOpacity(parseFloat(e.target.value))}
-          />
+        <div className="header-controls">
+          <button
+            className={`scroll-toggle ${isPlaying ? "playing" : ""}`}
+            onClick={handlePlayToggle}
+            title={isPlaying ? "暂停" : "自动滚动"}
+          >
+            {isPlaying ? PauseIcon : PlayIcon}
+          </button>
+          <div className="slider-group">
+            <div className="slider-row">
+              <span className="slider-label">滚动速度</span>
+              <input
+                className="teleprompter-slider"
+                type="range"
+                min="0"
+                max="100"
+                step="5"
+                value={speed}
+                onChange={(e) => setSpeed(parseInt(e.target.value))}
+              />
+            </div>
+            <div className="slider-row">
+              <span className="slider-label">透明度</span>
+              <input
+                className="teleprompter-slider"
+                type="range"
+                min="0.2"
+                max="1"
+                step="0.05"
+                value={opacity}
+                onChange={(e) => setOpacity(parseFloat(e.target.value))}
+              />
+            </div>
+          </div>
         </div>
       </div>
+
+      <textarea
+        ref={textareaRef}
+        className="teleprompter-text"
+        value={text}
+        onChange={handleTextChange}
+        onWheel={handleWheel}
+        placeholder="在此粘贴你的脚本...&#10;&#10;此文本仅对你可见，不会出现在录制中。"
+        readOnly={isPlaying}
+        style={{
+          backgroundColor: `rgba(240, 238, 235, ${opacity})`,
+        }}
+      />
     </div>
   );
 };

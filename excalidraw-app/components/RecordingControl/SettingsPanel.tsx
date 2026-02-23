@@ -21,6 +21,8 @@ interface SettingsPanelProps {
   setAspectRatio: (ratio: string) => void;
   background: string;
   setBackground: (bg: string) => void;
+  useCanvasBackground: boolean;
+  setUseCanvasBackground: (use: boolean) => void;
   borderRadius: number;
   setBorderRadius: (radius: number) => void;
   padding: number;
@@ -194,6 +196,8 @@ export const SettingsPanel = ({
   setAspectRatio,
   background,
   setBackground,
+  useCanvasBackground,
+  setUseCanvasBackground,
   borderRadius,
   setBorderRadius,
   padding,
@@ -465,45 +469,70 @@ export const SettingsPanel = ({
               onToggle={() => toggleSection("appearance")}
             >
               <div className="control-group">
-                <label>背景</label>
-                <div className="bg-categories">
-                  {BG_CATEGORIES.map((cat) => (
-                    <button
-                      key={cat.id}
-                      className={clsx("cat-btn", {
-                        active: bgFilter === cat.id,
-                      })}
-                      onClick={() => setBgFilter(cat.id)}
-                    >
-                      {cat.label}
-                    </button>
-                  ))}
+                <div className="switch-row">
+                  <label>使用画布背景</label>
+                  <div className="switch-container">
+                    <label className="switch">
+                      <input
+                        type="checkbox"
+                        checked={useCanvasBackground}
+                        onChange={(e) => {
+                          setUseCanvasBackground(e.target.checked);
+                          if (e.target.checked) {
+                          }
+                        }}
+                      />
+                      <span className="slider round"></span>
+                    </label>
+                  </div>
                 </div>
-
-                <button
-                  className="random-bg-btn"
-                  onClick={handleRandomBackground}
-                >
-                  ✨ 随机选择壁纸
-                </button>
-
-                <div className="bg-grid">
-                  {filteredBackgrounds.map((bg) => (
-                    <button
-                      key={bg.id}
-                      className={clsx("bg-btn", {
-                        active: background === bg.value,
-                      })}
-                      style={{ background: bg.value }}
-                      onClick={() => setBackground(bg.value)}
-                    >
-                      {background === bg.value && (
-                        <div className="checked-overlay">{CheckIcon}</div>
-                      )}
-                    </button>
-                  ))}
-                </div>
+                <p className="control-hint">
+                  开启后，录制背景将与画布背景颜色一致
+                </p>
               </div>
+
+              {!useCanvasBackground && (
+                <div className="control-group">
+                  <label>背景</label>
+                  <div className="bg-categories">
+                    {BG_CATEGORIES.map((cat) => (
+                      <button
+                        key={cat.id}
+                        className={clsx("cat-btn", {
+                          active: bgFilter === cat.id,
+                        })}
+                        onClick={() => setBgFilter(cat.id)}
+                      >
+                        {cat.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <button
+                    className="random-bg-btn"
+                    onClick={handleRandomBackground}
+                  >
+                    ✨ 随机选择壁纸
+                  </button>
+
+                  <div className="bg-grid">
+                    {filteredBackgrounds.map((bg) => (
+                      <button
+                        key={bg.id}
+                        className={clsx("bg-btn", {
+                          active: background === bg.value,
+                        })}
+                        style={{ background: bg.value }}
+                        onClick={() => setBackground(bg.value)}
+                      >
+                        {background === bg.value && (
+                          <div className="checked-overlay">{CheckIcon}</div>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="control-group">
                 <div className="label-row">

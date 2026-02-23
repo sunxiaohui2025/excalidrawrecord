@@ -387,6 +387,7 @@ const ExcalidrawWrapper = () => {
   const [background, setBackground] = useState(
     "linear-gradient(135deg, #fce38a 0%, #f38181 100%)",
   );
+  const [useCanvasBackground, setUseCanvasBackground] = useState(false);
   const [borderRadius, setBorderRadius] = useState(16);
   const [padding, setPadding] = useState(60);
   const [showCamera, setShowCamera] = useState(false);
@@ -521,6 +522,17 @@ const ExcalidrawWrapper = () => {
 
   const [excalidrawAPI, excalidrawRefCallback] =
     useCallbackRefState<ExcalidrawImperativeAPI>();
+
+  // Sync canvas background color
+  useEffect(() => {
+    if (!excalidrawAPI || !useCanvasBackground) {
+      return;
+    }
+    const appState = excalidrawAPI.getAppState();
+    if (appState?.viewBackgroundColor) {
+      setBackground(appState.viewBackgroundColor);
+    }
+  }, [excalidrawAPI, useCanvasBackground]);
 
   const [, setShareDialogState] = useAtom(shareDialogStateAtom);
   const [collabAPI] = useAtom(collabAPIAtom);
@@ -782,6 +794,11 @@ const ExcalidrawWrapper = () => {
   ) => {
     if (collabAPI?.isCollaborating()) {
       collabAPI.syncElements(elements);
+    }
+
+    // Sync canvas background if enabled
+    if (useCanvasBackground && appState.viewBackgroundColor) {
+      setBackground(appState.viewBackgroundColor);
     }
 
     // this check is redundant, but since this is a hot path, it's best
@@ -1071,6 +1088,8 @@ const ExcalidrawWrapper = () => {
             setAspectRatio={setAspectRatio}
             background={background}
             setBackground={setBackground}
+            useCanvasBackground={useCanvasBackground}
+            setUseCanvasBackground={setUseCanvasBackground}
             borderRadius={borderRadius}
             setBorderRadius={setBorderRadius}
             padding={padding}
