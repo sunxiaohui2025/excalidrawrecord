@@ -5,6 +5,7 @@ import { t } from "../../i18n";
 import { useApp } from "../App";
 import { Dialog } from "../Dialog";
 import { withInternalFallback } from "../hoc/withInternalFallback";
+import { CloseIcon } from "../icons";
 
 import MermaidToExcalidraw from "./MermaidToExcalidraw";
 import TextToDiagram from "./TextToDiagram";
@@ -87,11 +88,20 @@ const TTDDialogBase = withInternalFallback(
         onCloseRequest={() => {
           app.setOpenDialog(null);
         }}
-        size={1520}
+        size="wide"
         title={false}
         {...rest}
         autofocus={false}
       >
+        <button
+          className="ttd-dialog-close"
+          onClick={() => app.setOpenDialog(null)}
+          title={t("buttons.close")}
+          aria-label={t("buttons.close")}
+          type="button"
+        >
+          {CloseIcon}
+        </button>
         <TTDDialogTabs dialog="ttd" tab={tab}>
           {"__fallback" in rest && rest.__fallback ? (
             <p className="dialog-mermaid-title">{t("mermaid.title")}</p>
