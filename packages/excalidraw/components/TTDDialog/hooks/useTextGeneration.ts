@@ -23,6 +23,40 @@ import type { LLMMessage, TTTDDialog } from "../types";
 const MIN_PROMPT_LENGTH = 3;
 const MAX_PROMPT_LENGTH = 10000;
 
+const cleanMermaidResponse = (response: string): string => {
+  let cleaned = response.trim();
+
+  // Remove markdown code blocks if present
+  const mermaidMatch = cleaned.match(/```mermaid\n?([\s\S]*?)\n?```/);
+  if (mermaidMatch) {
+    cleaned = mermaidMatch[1];
+  } else {
+    // Try generic code block
+    const genericMatch = cleaned.match(/```\w*\n?([\s\S]*?)\n?```/);
+    if (genericMatch) {
+      cleaned = genericMatch[1];
+    } else {
+      // Remove code block markers at start/end
+      cleaned = cleaned.replace(/^```\w*\n?/, "").replace(/\n?```$/, "");
+    }
+  }
+
+  // Convert Chinese punctuation to English punctuation
+  cleaned = cleaned
+    .replace(/[（]/g, "(") // Chinese left parenthesis
+    .replace(/[）]/g, ")") // Chinese right parenthesis
+    .replace(/[【]/g, "[") // Chinese left bracket
+    .replace(/[】]/g, "]") // Chinese right bracket
+    .replace(/[｛]/g, "{") // Chinese left brace
+    .replace(/[｝]/g, "}") // Chinese right brace
+    .replace(/[：]/g, ":") // Chinese colon
+    .replace(/[；]/g, ";") // Chinese semicolon
+    .replace(/[，]/g, ",") // Chinese comma
+    .replace(/[。]/g, "."); // Chinese period
+
+  return cleaned.trim();
+};
+
 export const useTextGeneration = ({
   onTextSubmit,
 }: {
@@ -122,8 +156,20 @@ export const useTextGeneration = ({
           onChunk: (chunk: string) => {
             setChatHistory((prev) => {
               const lastAssistantMessage = getLastAssistantMessage(prev);
+              // Clean the chunk before appending
+              const cleanedChunk = chunk
+                .replace(/[（]/g, "(")
+                .replace(/[）]/g, ")")
+                .replace(/[【]/g, "[")
+                .replace(/[】]/g, "]")
+                .replace(/[｛]/g, "{")
+                .replace(/[｝]/g, "}")
+                .replace(/[：]/g, ":")
+                .replace(/[；]/g, ";")
+                .replace(/[，]/g, ",")
+                .replace(/[。]/g, ".");
               return updateAssistantContent(prev, {
-                content: lastAssistantMessage.content + chunk,
+                content: lastAssistantMessage.content + cleanedChunk,
               });
             });
           },
@@ -190,8 +236,18 @@ export const useTextGeneration = ({
         return;
       }
 
+      // Clean the response before parsing
+      const cleanedResponse = cleanMermaidResponse(generatedResponse ?? "");
+
+      // Update the message with cleaned content
+      setChatHistory((prev) =>
+        updateAssistantContent(prev, {
+          content: cleanedResponse,
+        }),
+      );
+
       try {
-        await parseMermaidToExcalidraw(generatedResponse ?? "");
+        await parseMermaidToExcalidraw(cleanedResponse);
         trackEvent("ai", "mermaid parse success", "ttd");
       } catch (error: any) {
         trackEvent("ai", "mermaid parse failed", "ttd");

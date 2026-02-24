@@ -84,7 +84,7 @@ export const AIComponents = ({
                   ],
                 },
               ],
-              temperature: 0.1,
+              temperature: 0.3,
             }),
           });
 
@@ -142,13 +142,21 @@ export const AIComponents = ({
 2. 不要使用 markdown 代码块包裹 (例如 \`\`\`mermaid ... \`\`\`)，直接返回纯代码。
 3. 如果用户描述不清楚，请尝试生成最合理的图表。
 4. 支持的图表类型：流程图(flowchart)、时序图(sequence)、类图(class)、状态图(state)、实体关系图(erDiagram)、用户旅程图(journey)、甘特图(gantt)、饼图(pie)、象限图(quadrant)、需求图(requirement)、Git图(gitGraph)、C4架构图(C4Context)、思维导图(mindmap)、时间线(timeline)。
+5. 流程图必须使用 "flowchart" 关键字，并使用标准语法：
+   - 方向声明使用 "flowchart TD" (Top-Down) 或 "flowchart LR" (Left-Right)
+   - 节点定义：A[文本] 表示矩形，B{文本} 表示菱形，C(文本) 表示圆角矩形，D((文本)) 表示圆形
+   - 箭头语法：使用 --> 表示箭头，使用 -->|标签| 表示带标签的箭头
+   - 不要使用 -- 文本 --> 语法，应该使用 -->|文本|
+   - 确保每个节点都有明确定义的形状符号（[] () {} 或 (( )))
 
-示例输出：
-graph TD
-    A[开始] --> B{判断}
-    B -- 是 --> C[执行]
-    B -- 否 --> D[结束]
-    C --> D`,
+示例输出（用户要求登录流程图）：
+flowchart TD
+    A[输入用户名] --> B[输入密码]
+    B --> C{验证信息}
+    C -->|成功| D[进入主页]
+    C -->|失败| E[显示错误]
+    E --> B
+    D --> F((结束))`,
           };
 
           const newMessages = [systemPrompt, ...messages];
