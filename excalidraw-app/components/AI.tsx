@@ -17,7 +17,7 @@ import { getAIConfig, hasAIConfig } from "../data/AIConfigStorage";
 const AIWelcomeScreen = () => {
   return (
     <div className="chat-interface__welcome-screen__welcome-message">
-      <h3>AI 图表生成</h3>
+      <h3>AI 生成图表</h3>
       <p>输入描述，AI 将自动生成流程图、时序图等多种图表</p>
       <p>支持的图表类型：流程图、时序图、类图、状态图、甘特图等</p>
       <p style={{ marginTop: "0.5rem", color: "var(--color-gray-60)" }}>
