@@ -402,9 +402,9 @@
     "link_title": "Liên kết có thể chia sẻ",
     "link_details": "Tạo liên kết chỉ xem",
     "link_button": "Tạo liên kết",
-    "excalidrawplus_description": "Lưu bản vẽ vào không gian làm việc Excalidraw+ của bạn.",
+    "excalidrawplus_description": "Lưu bản vẽ vào không gian làm việc AI+Draw của bạn.",
     "excalidrawplus_button": "Xuất",
-    "excalidrawplus_exportError": "Hiện tại không thể xuất sang Excalidraw+..."
+    "excalidrawplus_exportError": "Hiện tại không thể xuất sang AI+Draw..."
   },
   "helpDialog": {
     "blog": "Đọc blog của chúng tôi",

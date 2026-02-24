@@ -402,9 +402,9 @@
     "link_title": "Tautan",
     "link_details": "Ekspor sebagai tautan yang hanya dibaca.",
     "link_button": "Ekspor ke tautan",
-    "excalidrawplus_description": "Simpan pemandangan ke ruang kerja Excalidraw+ Anda.",
+    "excalidrawplus_description": "Simpan pemandangan ke ruang kerja AI+Draw Anda.",
     "excalidrawplus_button": "Ekspor",
-    "excalidrawplus_exportError": "Tidak dapat ekspor ke Excalidraw+ saat ini..."
+    "excalidrawplus_exportError": "Tidak dapat ekspor ke AI+Draw saat ini..."
   },
   "helpDialog": {
     "blog": "Baca blog kami",
@@ -560,7 +560,7 @@
       "center_heading": "",
       "center_heading_line2": "",
       "center_heading_line3": "",
-      "center_heading_plus": "Apa Anda ingin berpindah ke Excalidraw+?",
+      "center_heading_plus": "Apa Anda ingin berpindah ke AI+Draw?",
       "menuHint": "Ekspor, preferensi, bahasa, ..."
     },
     "defaults": {
@@ -591,9 +591,9 @@
         "description": "Ekspor data pemandangan ke file yang dapat Anda dapat impor nanti."
       },
       "excalidrawPlus": {
-        "title": "Excalidraw+",
-        "button": "Ekspor ke Excalidraw+",
-        "description": "Simpan pemandangan ke ruang kerja Excalidraw+ Anda."
+        "title": "AI+Draw",
+        "button": "Ekspor ke AI+Draw",
+        "description": "Simpan pemandangan ke ruang kerja AI+Draw Anda."
       }
     },
     "modal": {

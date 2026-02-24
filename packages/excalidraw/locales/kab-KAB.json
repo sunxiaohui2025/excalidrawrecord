@@ -402,9 +402,9 @@
     "link_title": "Aseɣwen n beṭṭu",
     "link_details": "Sifeḍ am useɣwen n tɣuri kan.",
     "link_button": "Sifeḍ deg useɣwen",
-    "excalidrawplus_description": "Sekles asayes-inek•inem di tallunt n umahil Excalidraw+.",
+    "excalidrawplus_description": "Sekles asayes-inek•inem di tallunt n umahil AI+Draw.",
     "excalidrawplus_button": "Sifeḍ",
-    "excalidrawplus_exportError": "Ulamek asifeḍ ɣer Excalidraw+ akka tura..."
+    "excalidrawplus_exportError": "Ulamek asifeḍ ɣer AI+Draw akka tura..."
   },
   "helpDialog": {
     "blog": "Ɣeṛ ablug-nneɣ",
@@ -560,7 +560,7 @@
       "center_heading": "",
       "center_heading_line2": "",
       "center_heading_line3": "",
-      "center_heading_plus": "Tebɣiḍ ad tedduḍ ɣer Excalidraw+ deg umḍiq?",
+      "center_heading_plus": "Tebɣiḍ ad tedduḍ ɣer AI+Draw deg umḍiq?",
       "menuHint": "Asifeḍ, ismenyifen, tutlayin, ..."
     },
     "defaults": {
@@ -591,7 +591,7 @@
         "description": ""
       },
       "excalidrawPlus": {
-        "title": "Excalidraw+",
+        "title": "AI+Draw",
         "button": "",
         "description": ""
       }

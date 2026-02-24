@@ -404,7 +404,7 @@
     "link_button": "ส่งออกไปยังไฟล์",
     "excalidrawplus_description": "",
     "excalidrawplus_button": "ส่งออก",
-    "excalidrawplus_exportError": "ไม่สามารถส่งออกไปที่ Excalidraw+ ได้ในขณะนี้"
+    "excalidrawplus_exportError": "ไม่สามารถส่งออกไปที่ AI+Draw ได้ในขณะนี้"
   },
   "helpDialog": {
     "blog": "อ่านบล็อกของพวกเรา",
@@ -591,8 +591,8 @@
         "description": ""
       },
       "excalidrawPlus": {
-        "title": "Excalidraw+",
-        "button": "นำออกไปยัง Excalidraw+",
+        "title": "AI+Draw",
+        "button": "นำออกไปยัง AI+Draw",
         "description": ""
       }
     },

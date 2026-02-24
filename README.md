@@ -9,7 +9,7 @@
   <a href="https://excalidraw.com">Excalidraw Editor</a> |
   <a href="https://plus.excalidraw.com/blog">Blog</a> |
   <a href="https://docs.excalidraw.com">Documentation</a> |
-  <a href="https://plus.excalidraw.com">Excalidraw+</a>
+  <a href="https://plus.excalidraw.com">AI+Draw</a>
 </h4>
 
 <div align="center">
@@ -111,7 +111,7 @@ Check out our [documentation](https://docs.excalidraw.com/docs/@excalidraw/excal
 
 ## Sponsors & support
 
-If you like the project, you can become a sponsor at [Open Collective](https://opencollective.com/excalidraw) or use [Excalidraw+](https://plus.excalidraw.com/).
+If you like the project, you can become a sponsor at [Open Collective](https://opencollective.com/excalidraw) or use [AI+Draw](https://plus.excalidraw.com/).
 
 ## Thank you for supporting Excalidraw
 

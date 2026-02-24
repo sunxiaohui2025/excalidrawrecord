@@ -402,9 +402,9 @@
     "link_title": "分享链接",
     "link_details": "导出为只读链接。",
     "link_button": "导出链接",
-    "excalidrawplus_description": "将画布保存到您的 Excalidraw+ 工作区。",
+    "excalidrawplus_description": "将画布保存到您的 AI+Draw 工作区。",
     "excalidrawplus_button": "导出",
-    "excalidrawplus_exportError": "暂时无法导出到 Excalidraw+ ..."
+    "excalidrawplus_exportError": "暂时无法导出到 AI+Draw ..."
   },
   "helpDialog": {
     "blog": "浏览我们的博客",
@@ -560,7 +560,7 @@
       "center_heading": "",
       "center_heading_line2": "",
       "center_heading_line3": "",
-      "center_heading_plus": "是否前往 Excalidraw+ ？",
+      "center_heading_plus": "是否前往 AI+Draw ？",
       "menuHint": "导出、首选项、语言……"
     },
     "defaults": {
@@ -591,9 +591,9 @@
         "description": "将画布数据导出为文件，以便以后导入。"
       },
       "excalidrawPlus": {
-        "title": "Excalidraw+",
-        "button": "导出到 Excalidraw+",
-        "description": "将画布保存到您的 Excalidraw+ 工作区。"
+        "title": "AI+Draw",
+        "button": "导出到 AI+Draw",
+        "description": "将画布保存到您的 AI+Draw 工作区。"
       }
     },
     "modal": {

@@ -277,32 +277,36 @@ export const readSystemClipboard = async () => {
 
   try {
     clipboardItems = await navigator.clipboard?.read();
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const err = error as { message?: string; name?: string };
     try {
       if (navigator.clipboard?.readText) {
         console.warn(
-          `navigator.clipboard.readText() failed (${error.message}). Failling back to navigator.clipboard.read()`,
+          `navigator.clipboard.readText() failed (${err.message}). Failling back to navigator.clipboard.read()`,
         );
         const readText = await navigator.clipboard?.readText();
         if (readText) {
           return { [MIME_TYPES.text]: readText };
         }
       }
-    } catch (error: any) {
-      // @ts-ignore
-      if (navigator.clipboard?.read) {
+    } catch (innerError) {
+      const innerErr = innerError as { message?: string; name?: string };
+      const clipboard = navigator.clipboard as
+        | { read?: () => Promise<ClipboardItems> }
+        | undefined;
+      if (clipboard?.read) {
         console.warn(
-          `navigator.clipboard.readText() failed (${error.message}). Failling back to navigator.clipboard.read()`,
+          `navigator.clipboard.readText() failed (${innerErr.message}). Failling back to navigator.clipboard.read()`,
         );
       } else {
-        if (error.name === "DataError") {
+        if (innerErr.name === "DataError") {
           console.warn(
-            `navigator.clipboard.read() error, clipboard is probably empty: ${error.message}`,
+            `navigator.clipboard.read() error, clipboard is probably empty: ${innerErr.message}`,
           );
           return types;
         }
 
-        throw error;
+        throw innerError;
       }
     }
     throw error;
@@ -560,8 +564,9 @@ export const parseClipboard = async (
     if (spreadsheetResult) {
       return spreadsheetResult;
     }
-  } catch (error: any) {
-    console.error(error);
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.debug("Failed to parse spreadsheet data:", error);
   }
 
   try {
@@ -578,7 +583,10 @@ export const parseClipboard = async (
         programmaticAPI,
       };
     }
-  } catch {}
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.debug("Failed to parse system clipboard data:", error);
+  }
 
   return { text: parsedEventData.value };
 };

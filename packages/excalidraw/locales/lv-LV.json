@@ -402,9 +402,9 @@
     "link_title": "Kopīgošanas saite",
     "link_details": "Eksportēt kā tikai lasāmu saiti.",
     "link_button": "Eksportēt kā saiti",
-    "excalidrawplus_description": "Saglabāt ainu savā Excalidraw+ darbvietā.",
+    "excalidrawplus_description": "Saglabāt ainu savā AI+Draw darbvietā.",
     "excalidrawplus_button": "Eksportēt",
-    "excalidrawplus_exportError": "Pašreiz nevarēja eksportēt uz Excalidraw+..."
+    "excalidrawplus_exportError": "Pašreiz nevarēja eksportēt uz AI+Draw..."
   },
   "helpDialog": {
     "blog": "Lasīt mūsu blogu",
@@ -560,7 +560,7 @@
       "center_heading": "",
       "center_heading_line2": "",
       "center_heading_line3": "",
-      "center_heading_plus": "Vai tā vietā vēlies doties uz Excalidraw+?",
+      "center_heading_plus": "Vai tā vietā vēlies doties uz AI+Draw?",
       "menuHint": "Eksportēšana, iestatījumi, valodas..."
     },
     "defaults": {

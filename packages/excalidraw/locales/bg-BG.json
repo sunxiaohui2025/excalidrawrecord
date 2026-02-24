@@ -591,9 +591,9 @@
         "description": ""
       },
       "excalidrawPlus": {
-        "title": "Excalidraw+",
-        "button": "Експортирай към Excalidraw+",
-        "description": "Запази сцената към Excalidraw+ работното място."
+        "title": "AI+Draw",
+        "button": "Експортирай към AI+Draw",
+        "description": "Запази сцената към AI+Draw работното място."
       }
     },
     "modal": {

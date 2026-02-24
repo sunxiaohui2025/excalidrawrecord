@@ -402,9 +402,9 @@
     "link_title": "Lien partageable",
     "link_details": "Exporter comme un lien en lecture seule.",
     "link_button": "Exporter comme lien",
-    "excalidrawplus_description": "Enregistrer la scène dans votre espace de travail Excalidraw+.",
+    "excalidrawplus_description": "Enregistrer la scène dans votre espace de travail AI+Draw.",
     "excalidrawplus_button": "Exporter",
-    "excalidrawplus_exportError": "Impossible d'exporter vers Excalidraw+ pour le moment..."
+    "excalidrawplus_exportError": "Impossible d'exporter vers AI+Draw pour le moment..."
   },
   "helpDialog": {
     "blog": "Lire notre blog",
@@ -560,7 +560,7 @@
       "center_heading": "",
       "center_heading_line2": "",
       "center_heading_line3": "",
-      "center_heading_plus": "Vouliez-vous plutôt aller à Excalidraw+ à la place ?",
+      "center_heading_plus": "Vouliez-vous plutôt aller à AI+Draw à la place ?",
       "menuHint": "Exportation, préférences, langues, ..."
     },
     "defaults": {
@@ -591,9 +591,9 @@
         "description": "Exporter les données de la scène comme un fichier que vous pourrez importer ultérieurement."
       },
       "excalidrawPlus": {
-        "title": "Excalidraw+",
-        "button": "Exporter vers Excalidraw+",
-        "description": "Enregistrer la scène dans votre espace de travail Excalidraw+."
+        "title": "AI+Draw",
+        "button": "Exporter vers AI+Draw",
+        "description": "Enregistrer la scène dans votre espace de travail AI+Draw."
       }
     },
     "modal": {

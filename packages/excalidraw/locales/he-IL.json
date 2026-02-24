@@ -560,7 +560,7 @@
       "center_heading": "",
       "center_heading_line2": "",
       "center_heading_line3": "",
-      "center_heading_plus": "אתה רוצה ללכת אל Excalidraw+ במקום?",
+      "center_heading_plus": "אתה רוצה ללכת אל AI+Draw במקום?",
       "menuHint": "ייצוא, העדפות, שפות, ..."
     },
     "defaults": {
@@ -591,8 +591,8 @@
         "description": "ייצוא נתוני הסצנה לקובץ אותו אפשר לייבא בהמשך."
       },
       "excalidrawPlus": {
-        "title": "Excalidraw+‎",
-        "button": "ייצוא ל־Excalidraw+‎",
+        "title": "AI+Draw‎",
+        "button": "ייצוא ל־AI+Draw‎",
         "description": "שמירת הסצנה לסביבת העבודה שלך ב־+Excalidraw."
       }
     },

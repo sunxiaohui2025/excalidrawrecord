@@ -3998,7 +3998,9 @@ const Module = (function () {
         if (flush) {
           flush(0);
         }
-      } catch (e) {}
+      } catch (e) {
+        console.debug("Failed to flush woff2:", e);
+      }
       out = print;
       err = printErr;
       if (has) {

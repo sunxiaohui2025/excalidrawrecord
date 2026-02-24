@@ -117,8 +117,7 @@ const _newElementBase = <T extends ExcalidrawElement>(
       y,
       width,
       height,
-      // @ts-ignore
-      points: rest.points,
+      points: (rest as { points?: unknown }).points,
     });
   }
 

@@ -402,9 +402,9 @@
     "link_title": "Ligam de partejar",
     "link_details": "Exportar coma un ligam de lectura sola.",
     "link_button": "Exportar en ligam",
-    "excalidrawplus_description": "Enregistrar la scèna dins vòstre espaci de trabalh Excalidraw+.",
+    "excalidrawplus_description": "Enregistrar la scèna dins vòstre espaci de trabalh AI+Draw.",
     "excalidrawplus_button": "Exportar",
-    "excalidrawplus_exportError": "Export impossibla cap a Excalidraw+ pel moment..."
+    "excalidrawplus_exportError": "Export impossibla cap a AI+Draw pel moment..."
   },
   "helpDialog": {
     "blog": "Legir nòstre blog",
@@ -560,7 +560,7 @@
       "center_heading": "",
       "center_heading_line2": "",
       "center_heading_line3": "",
-      "center_heading_plus": "Voliatz puslèu utilizar Excalidraw+ a la plaça ?",
+      "center_heading_plus": "Voliatz puslèu utilizar AI+Draw a la plaça ?",
       "menuHint": "Exportar, preferéncias, lengas, ..."
     },
     "defaults": {
@@ -591,9 +591,9 @@
         "description": "Exportar las donadas de la scèna cap a un fichièr que podètz importar mai tard."
       },
       "excalidrawPlus": {
-        "title": "Excalidraw+",
-        "button": "Exportar dins Excalidraw+",
-        "description": "Enregistrar la scèna dins vòstre espaci de trabalh Excalidraw+."
+        "title": "AI+Draw",
+        "button": "Exportar dins AI+Draw",
+        "description": "Enregistrar la scèna dins vòstre espaci de trabalh AI+Draw."
       }
     },
     "modal": {

@@ -402,9 +402,9 @@
     "link_title": "Link condivisibile",
     "link_details": "Esporta come link di sola lettura.",
     "link_button": "Esporta come Link",
-    "excalidrawplus_description": "Salva la scena nel tuo spazio di lavoro Excalidraw+.",
+    "excalidrawplus_description": "Salva la scena nel tuo spazio di lavoro AI+Draw.",
     "excalidrawplus_button": "Esporta",
-    "excalidrawplus_exportError": "Non è stato possibile esportare su Excalidraw+ al questo momento..."
+    "excalidrawplus_exportError": "Non è stato possibile esportare su AI+Draw al questo momento..."
   },
   "helpDialog": {
     "blog": "Leggi il nostro blog",
@@ -560,7 +560,7 @@
       "center_heading": "",
       "center_heading_line2": "",
       "center_heading_line3": "",
-      "center_heading_plus": "Volevi invece andare su Excalidraw+?",
+      "center_heading_plus": "Volevi invece andare su AI+Draw?",
       "menuHint": "Esporta, preferenze, lingue, ..."
     },
     "defaults": {
@@ -591,9 +591,9 @@
         "description": "Esporta i dati della scena su file, che potrai importare in seguito."
       },
       "excalidrawPlus": {
-        "title": "Excalidraw+",
-        "button": "Esporta su Excalidraw+",
-        "description": "Salva la scena sul tuo spazio di lavoro Excalidraw+."
+        "title": "AI+Draw",
+        "button": "Esporta su AI+Draw",
+        "description": "Salva la scena sul tuo spazio di lavoro AI+Draw."
       }
     },
     "modal": {
@@ -658,7 +658,7 @@
       "mermaidParseError": "Errore di sintassi Mermaid"
     },
     "rateLimit": {
-      "messageLimit": "Hai raggiunto il tuo limite di IA sul piano gratuito. Prova Excalidraw+ per saperne di più o torna domani.",
+      "messageLimit": "Hai raggiunto il tuo limite di IA sul piano gratuito. Prova AI+Draw per saperne di più o torna domani.",
       "generalRateLimit": "Fermati, sei troppo veloce per noi! Attendi un attimo prima di riprovare.",
       "messageLimitInputPlaceholder": "Hai raggiunto il limite di messaggi"
     },

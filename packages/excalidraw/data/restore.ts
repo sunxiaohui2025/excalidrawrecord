@@ -407,7 +407,7 @@ export const restoreElement = (
         crop: element.crop ?? null,
       });
     case "line":
-    // @ts-ignore LEGACY type
+    // @ts-expect-error LEGACY type - draw is deprecated but still supported
     // eslint-disable-next-line no-fallthrough
     case "draw":
       const { startArrowhead = null, endArrowhead = null } = element;

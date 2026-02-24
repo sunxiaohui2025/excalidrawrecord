@@ -251,7 +251,7 @@ export const STRING_MIME_TYPES = {
   html: "text/html",
   json: "application/json",
   // excalidraw data
-  excalidraw: "application/vnd.excalidraw+json",
+  excalidraw: "application/vnd.AI+Drawjson",
   excalidrawClipboard: "application/vnd.excalidraw.clipboard+json",
   // LEGACY: fully-qualified library JSON data
   excalidrawlib: "application/vnd.excalidrawlib+json",

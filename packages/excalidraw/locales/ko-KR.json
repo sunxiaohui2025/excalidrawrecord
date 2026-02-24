@@ -402,9 +402,9 @@
     "link_title": "공유 가능한 링크 생성",
     "link_details": "읽기 전용 링크로 내보냅니다.",
     "link_button": "링크로 내보내기",
-    "excalidrawplus_description": "화면을 당신의 Excalidraw+ 작업 공간으로 저장합니다.",
+    "excalidrawplus_description": "화면을 당신의 AI+Draw 작업 공간으로 저장합니다.",
     "excalidrawplus_button": "내보내기",
-    "excalidrawplus_exportError": "지금은 Excalidraw+로 내보낼 수 없습니다..."
+    "excalidrawplus_exportError": "지금은 AI+Draw로 내보낼 수 없습니다..."
   },
   "helpDialog": {
     "blog": "블로그 읽어보기",
@@ -560,7 +560,7 @@
       "center_heading": "",
       "center_heading_line2": "",
       "center_heading_line3": "",
-      "center_heading_plus": "대신 Excalidraw+로 이동하시겠습니까?",
+      "center_heading_plus": "대신 AI+Draw로 이동하시겠습니까?",
       "menuHint": "내보내기, 설정, 언어, ..."
     },
     "defaults": {
@@ -592,8 +592,8 @@
       },
       "excalidrawPlus": {
         "title": "",
-        "button": "Excalidraw+로 내보내기",
-        "description": "화면을 당신의 Excalidraw+ 작업 공간으로 저장합니다."
+        "button": "AI+Draw로 내보내기",
+        "description": "화면을 당신의 AI+Draw 작업 공간으로 저장합니다."
       }
     },
     "modal": {

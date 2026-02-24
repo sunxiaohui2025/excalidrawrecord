@@ -17,7 +17,7 @@ export const AppWelcomeScreen: React.FC<{
     headingContent = t("welcomeScreen.app.center_heading_plus")
       .split(/(Excalidraw\+)/)
       .map((bit, idx) => {
-        if (bit === "Excalidraw+") {
+        if (bit === "AI+Draw") {
           return (
             <a
               style={{ pointerEvents: POINTER_EVENTS.inheritFromUI }}
@@ -26,7 +26,7 @@ export const AppWelcomeScreen: React.FC<{
               }?utm_source=excalidraw&utm_medium=app&utm_content=welcomeScreenSignedInUser`}
               key={idx}
             >
-              Excalidraw+
+              AI+Draw
             </a>
           );
         }

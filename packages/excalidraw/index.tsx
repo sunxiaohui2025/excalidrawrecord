@@ -96,8 +96,10 @@ const ExcalidrawBase = (props: ExcalidrawProps) => {
 
     // Block pinch-zooming on iOS outside of the content area
     const handleTouchMove = (event: TouchEvent) => {
-      // @ts-ignore
-      if (typeof event.scale === "number" && event.scale !== 1) {
+      if (
+        typeof (event as TouchEvent & { scale?: number }).scale === "number" &&
+        (event as TouchEvent & { scale?: number }).scale !== 1
+      ) {
         event.preventDefault();
       }
     };

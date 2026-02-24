@@ -1823,8 +1823,7 @@ export const actionChangeArrowType = register<keyof typeof ARROW_TYPE>({
         const startBinding =
           startElement && newElement.startBinding
             ? {
-                // @ts-ignore TS cannot discern check above
-                ...newElement.startBinding!,
+                ...newElement.startBinding,
                 ...calculateFixedPointForElbowArrowBinding(
                   newElement,
                   startElement,
@@ -1836,7 +1835,6 @@ export const actionChangeArrowType = register<keyof typeof ARROW_TYPE>({
         const endBinding =
           endElement && newElement.endBinding
             ? {
-                // @ts-ignore TS cannot discern check above
                 ...newElement.endBinding,
                 ...calculateFixedPointForElbowArrowBinding(
                   newElement,

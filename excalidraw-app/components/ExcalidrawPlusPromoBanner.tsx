@@ -12,7 +12,7 @@ export const ExcalidrawPlusPromoBanner = ({
         onClick={onClick}
         style={{ cursor: "pointer" }}
       >
-        Excalidraw+
+        AI+Draw
       </div>
     );
   }
@@ -30,7 +30,7 @@ export const ExcalidrawPlusPromoBanner = ({
       rel="noopener"
       className="plus-banner"
     >
-      Excalidraw+
+      AI+Draw
     </a>
   );
 };

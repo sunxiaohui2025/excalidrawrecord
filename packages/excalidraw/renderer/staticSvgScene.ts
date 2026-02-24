@@ -698,8 +698,8 @@ const renderElementToSvg = (
 
         addToRoot(g || node, element);
       } else {
-        // @ts-ignore
-        throw new Error(`Unimplemented type ${element.type}`);
+        const el = element as { type: string };
+        console.warn(`Unimplemented type ${el.type}`);
       }
     }
   }

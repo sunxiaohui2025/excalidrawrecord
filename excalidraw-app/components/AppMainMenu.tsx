@@ -29,7 +29,7 @@ export const AppMainMenu: React.FC<{
       <MainMenu.DefaultItems.SearchMenu />
       <MainMenu.DefaultItems.Help />
       <MainMenu.DefaultItems.ClearCanvas />
-      {/* Excalidraw+, Socials, and Sign up removed */}
+      {/* AI+Draw, Socials, and Sign up removed */}
       {isDevEnv() && (
         <MainMenu.Item
           icon={eyeIcon}

@@ -402,9 +402,9 @@
     "link_title": "Deelbare link",
     "link_details": "Exporteren als een alleen-lezen link.",
     "link_button": "Exporteer naar link",
-    "excalidrawplus_description": "Sla de scène op in je Excalidraw+ werkruimte.",
+    "excalidrawplus_description": "Sla de scène op in je AI+Draw werkruimte.",
     "excalidrawplus_button": "Exporteer",
-    "excalidrawplus_exportError": "Kan op dit moment niet exporteren naar Excalidraw+..."
+    "excalidrawplus_exportError": "Kan op dit moment niet exporteren naar AI+Draw..."
   },
   "helpDialog": {
     "blog": "Lees onze blog",
@@ -560,7 +560,7 @@
       "center_heading": "",
       "center_heading_line2": "",
       "center_heading_line3": "",
-      "center_heading_plus": "Wil je in plaats daarvan naar Excalidraw+ gaan?",
+      "center_heading_plus": "Wil je in plaats daarvan naar AI+Draw gaan?",
       "menuHint": "Exporteren, voorkeuren en meer, ..."
     },
     "defaults": {
@@ -591,9 +591,9 @@
         "description": "Exporteer de scènegegevens als bestand die je later weer kunt importeren."
       },
       "excalidrawPlus": {
-        "title": "Excalidraw+",
-        "button": "Exporteer naar Excalidraw+",
-        "description": "Sla de scène op in je Excalidraw+ werkruimte."
+        "title": "AI+Draw",
+        "button": "Exporteer naar AI+Draw",
+        "description": "Sla de scène op in je AI+Draw werkruimte."
       }
     },
     "modal": {
@@ -658,7 +658,7 @@
       "mermaidParseError": ""
     },
     "rateLimit": {
-      "messageLimit": "Je hebt je AI limiet bereikt op het gratis abonnement. Probeer Excalidraw+ uit voor meer of kom morgen terug.",
+      "messageLimit": "Je hebt je AI limiet bereikt op het gratis abonnement. Probeer AI+Draw uit voor meer of kom morgen terug.",
       "generalRateLimit": "Ho ho, rustig aan, je gaat te snel voor ons! Wacht even voor je het opnieuw probeert.",
       "messageLimitInputPlaceholder": "Je hebt je berichtenlimiet bereikt"
     },

@@ -1063,8 +1063,7 @@ export const renderElement = (
       break;
     }
     default: {
-      // @ts-ignore
-      throw new Error(`Unimplemented type ${element.type}`);
+      console.warn(`Unimplemented type ${element.type}`);
     }
   }
 

@@ -98,7 +98,10 @@ export const parseElementLinkFromURL = (url: string) => {
       const id = searchParams.get(ELEMENT_LINK_KEY);
       return id;
     }
-  } catch {}
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.debug("Failed to parse URL for element link:", e);
+  }
 
   return null;
 };

@@ -402,9 +402,9 @@
     "link_title": "Enllaç per a compartir",
     "link_details": "Exporta com a un enllaç de només lectura.",
     "link_button": "Exporta a un enllaç",
-    "excalidrawplus_description": "Desa l'escena en el vostre espai de treball Excalidraw+.",
+    "excalidrawplus_description": "Desa l'escena en el vostre espai de treball AI+Draw.",
     "excalidrawplus_button": "Exporta",
-    "excalidrawplus_exportError": "No és possible exportar a Excalidraw+ ara mateix..."
+    "excalidrawplus_exportError": "No és possible exportar a AI+Draw ara mateix..."
   },
   "helpDialog": {
     "blog": "Llegiu el nostre blog",
@@ -560,7 +560,7 @@
       "center_heading": "",
       "center_heading_line2": "",
       "center_heading_line3": "",
-      "center_heading_plus": "Vols anar a Excalidraw+ en comptes?",
+      "center_heading_plus": "Vols anar a AI+Draw en comptes?",
       "menuHint": "Exportar, preferències, llenguatges..."
     },
     "defaults": {
@@ -591,9 +591,9 @@
         "description": "Exporta les dades de l'escena a un fitxer des del qual podràs importar-les més tard."
       },
       "excalidrawPlus": {
-        "title": "Excalidraw+",
-        "button": "Exporta a Excalidraw+",
-        "description": "Desa l'escena al teu espai de treball d'Excalidraw+."
+        "title": "AI+Draw",
+        "button": "Exporta a AI+Draw",
+        "description": "Desa l'escena al teu espai de treball d'AI+Draw."
       }
     },
     "modal": {

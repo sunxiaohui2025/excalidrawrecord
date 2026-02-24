@@ -817,7 +817,10 @@ class App extends React.Component<AppProps, AppState> {
     let data = null;
     try {
       data = JSON.parse(event.data);
-    } catch {}
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.debug("Failed to parse iframe message data:", e);
+    }
     if (!data) {
       return;
     }
@@ -3475,15 +3478,15 @@ class App extends React.Component<AppProps, AppState> {
       // only create text if the second tap is within the threshold of the first tap
       // this prevents accidental text creation during dragging/selection
       if (distance <= DOUBLE_TAP_POSITION_THRESHOLD) {
-        // end lasso trail and deselect elements just in case
         this.lassoTrail.endPath();
         this.deselectElements();
 
-        // @ts-ignore
-        this.handleCanvasDoubleClick({
-          clientX: touch.clientX,
-          clientY: touch.clientY,
-        });
+        this.handleCanvasDoubleClick(
+          new MouseEvent("dblclick", {
+            clientX: touch.clientX,
+            clientY: touch.clientY,
+          }) as unknown as React.MouseEvent<HTMLCanvasElement>,
+        );
       }
       didTapTwice = false;
       clearTimeout(tappedTwiceTimer);

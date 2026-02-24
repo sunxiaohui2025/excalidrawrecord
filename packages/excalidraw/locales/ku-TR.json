@@ -402,7 +402,7 @@
     "link_title": "بەستەری هاوبەشیپێکردن",
     "link_details": "ناردن وەک بەستەری تەنها-خوێندنەوە.",
     "link_button": "هەناردەکردن بۆ بەستەر",
-    "excalidrawplus_description": "دیمەنەکە لە شوێنی کارکردنی Excalidraw+ هەڵبگرە.",
+    "excalidrawplus_description": "دیمەنەکە لە شوێنی کارکردنی AI+Draw هەڵبگرە.",
     "excalidrawplus_button": "هەناردەکردن",
     "excalidrawplus_exportError": "لەم ساتەدا نەتوانرا هەناردە بکرێت بۆ Excalidrow+..."
   },
@@ -560,7 +560,7 @@
       "center_heading": "",
       "center_heading_line2": "",
       "center_heading_line3": "",
-      "center_heading_plus": "ویستت بڕۆیت بۆ Excalidraw+?",
+      "center_heading_plus": "ویستت بڕۆیت بۆ AI+Draw?",
       "menuHint": "هەناردەکردن، ڕێکخستنەکان، زمانەکان، ..."
     },
     "defaults": {

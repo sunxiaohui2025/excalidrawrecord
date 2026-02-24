@@ -402,9 +402,9 @@
     "link_title": "Поделитесь ссылкой",
     "link_details": "Экспорт ссылки только для чтения.",
     "link_button": "Экспорт в ссылку",
-    "excalidrawplus_description": "Сохраните сцену в ваше рабочее пространство Excalidraw+.",
+    "excalidrawplus_description": "Сохраните сцену в ваше рабочее пространство AI+Draw.",
     "excalidrawplus_button": "Экспорт",
-    "excalidrawplus_exportError": "Не удалось экспортировать в Excalidraw+ на данный момент..."
+    "excalidrawplus_exportError": "Не удалось экспортировать в AI+Draw на данный момент..."
   },
   "helpDialog": {
     "blog": "Прочитайте наш блог",
@@ -560,7 +560,7 @@
       "center_heading": "",
       "center_heading_line2": "",
       "center_heading_line3": "",
-      "center_heading_plus": "Хотите перейти на Excalidraw+?",
+      "center_heading_plus": "Хотите перейти на AI+Draw?",
       "menuHint": "Экспорт, настройки, языки, ..."
     },
     "defaults": {
@@ -591,9 +591,9 @@
         "description": "Экспортировать данные сцены в файл, из которого можно импортировать позже."
       },
       "excalidrawPlus": {
-        "title": "Excalidraw+",
-        "button": "Экспорт в Excalidraw+",
-        "description": "Сохраните сцену в ваше рабочее пространство Excalidraw+."
+        "title": "AI+Draw",
+        "button": "Экспорт в AI+Draw",
+        "description": "Сохраните сцену в ваше рабочее пространство AI+Draw."
       }
     },
     "modal": {
@@ -658,7 +658,7 @@
       "mermaidParseError": ""
     },
     "rateLimit": {
-      "messageLimit": "Вы достигли лимита ИИ на бесплатном тарифном плане. Попробуйте Excalidraw+ или вернитесь завтра.",
+      "messageLimit": "Вы достигли лимита ИИ на бесплатном тарифном плане. Попробуйте AI+Draw или вернитесь завтра.",
       "generalRateLimit": "Подождите, вы слишком быстры для нас! Пожалуйста, подождите немного, прежде чем повторить попытку.",
       "messageLimitInputPlaceholder": "Вы достигли лимита сообщений"
     },
