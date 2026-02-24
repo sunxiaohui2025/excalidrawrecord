@@ -8,42 +8,21 @@ import {
 } from "@excalidraw/excalidraw";
 import { getDataURL } from "@excalidraw/excalidraw/data/blob";
 
-import { useState } from "react";
-
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import type { TTTDDialog } from "@excalidraw/excalidraw/components/TTDDialog/types";
 
 import { TTDIndexedDBAdapter } from "../data/TTDStorage";
 import { getAIConfig, hasAIConfig } from "../data/AIConfigStorage";
 
-import { AISettingsDialog } from "./AISettingsDialog";
-
-const AIWelcomeScreen = ({
-  onOpenSettings,
-}: {
-  onOpenSettings: () => void;
-}) => {
+const AIWelcomeScreen = () => {
   return (
     <div className="chat-interface__welcome-screen__welcome-message">
       <h3>AI 图表生成</h3>
       <p>输入描述，AI 将自动生成流程图、时序图等多种图表</p>
       <p>支持的图表类型：流程图、时序图、类图、状态图、甘特图等</p>
-      <button
-        className="ai-settings-link-btn"
-        onClick={onOpenSettings}
-        style={{
-          marginTop: "1rem",
-          padding: "0.5rem 1rem",
-          background: "var(--color-primary)",
-          color: "#fff",
-          border: "none",
-          borderRadius: "var(--border-radius-lg)",
-          cursor: "pointer",
-          fontWeight: 600,
-        }}
-      >
-        {hasAIConfig() ? "⚙️ 已配置 AI" : "⚙️ 配置 AI"}
-      </button>
+      <p style={{ marginTop: "0.5rem", color: "var(--color-gray-60)" }}>
+        💡 请在上方 "AI 设置" 标签页中配置您的 API Key
+      </p>
     </div>
   );
 };
@@ -53,8 +32,6 @@ export const AIComponents = ({
 }: {
   excalidrawAPI: ExcalidrawImperativeAPI;
 }) => {
-  const [showAISettings, setShowAISettings] = useState(false);
-
   const getConfig = () => {
     const config = getAIConfig();
     if (!config || !config.apiKey || !config.baseUrl) {
@@ -66,7 +43,7 @@ export const AIComponents = ({
   };
 
   const renderWelcomeScreen: TTTDDialog.renderWelcomeScreen = () => {
-    return <AIWelcomeScreen onOpenSettings={() => setShowAISettings(true)} />;
+    return <AIWelcomeScreen />;
   };
 
   return (
@@ -215,9 +192,6 @@ flowchart TD
         }}
         persistenceAdapter={TTDIndexedDBAdapter}
       />
-      {showAISettings && (
-        <AISettingsDialog onClose={() => setShowAISettings(false)} />
-      )}
     </>
   );
 };

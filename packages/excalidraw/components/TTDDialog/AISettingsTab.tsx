@@ -26,9 +26,14 @@ export const AISettingsTab = () => {
     } else {
       setConfig({
         apiKey: import.meta.env.VITE_APP_AI_API_KEY || "",
-        baseUrl: import.meta.env.VITE_APP_AI_BASE_URL || "",
-        visionModel: import.meta.env.VITE_APP_AI_VISION_MODEL || "",
-        textModel: import.meta.env.VITE_APP_AI_TEXT_MODEL || "",
+        baseUrl:
+          import.meta.env.VITE_APP_AI_BASE_URL ||
+          "https://api.siliconflow.cn/v1",
+        visionModel:
+          import.meta.env.VITE_APP_AI_VISION_MODEL ||
+          "Qwen/Qwen3-VL-32B-Instruct",
+        textModel:
+          import.meta.env.VITE_APP_AI_TEXT_MODEL || "Qwen/Qwen3-8B",
       });
       setHasEnvConfig(!!import.meta.env.VITE_APP_AI_API_KEY);
     }
@@ -42,11 +47,12 @@ export const AISettingsTab = () => {
 
   const handleClear = () => {
     clearAIConfigFromLocalStorage();
+    // 清除后恢复默认值
     setConfig({
       apiKey: "",
-      baseUrl: "",
-      visionModel: "",
-      textModel: "",
+      baseUrl: "https://api.siliconflow.cn/v1",
+      visionModel: "Qwen/Qwen3-VL-32B-Instruct",
+      textModel: "Qwen/Qwen3-8B",
     });
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
@@ -71,6 +77,14 @@ export const AISettingsTab = () => {
             onChange={(e) => setConfig({ ...config, apiKey: e.target.value })}
             placeholder="sk-..."
           />
+          <a
+            href="https://cloud.siliconflow.cn/i/WFoChvZf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ai-settings-get-key-btn"
+          >
+            获取 API Key（点击注册，获取新用户免费额度）
+          </a>
         </div>
 
         <div className="ai-settings-field">
@@ -79,7 +93,7 @@ export const AISettingsTab = () => {
             type="text"
             value={config.baseUrl}
             onChange={(e) => setConfig({ ...config, baseUrl: e.target.value })}
-            placeholder="https://api.openai.com/v1"
+            placeholder="https://api.siliconflow.cn/v1"
           />
         </div>
 
@@ -91,7 +105,7 @@ export const AISettingsTab = () => {
             onChange={(e) =>
               setConfig({ ...config, visionModel: e.target.value })
             }
-            placeholder="gpt-4o"
+            placeholder="Qwen/Qwen3-VL-32B-Instruct"
           />
         </div>
 
@@ -103,7 +117,7 @@ export const AISettingsTab = () => {
             onChange={(e) =>
               setConfig({ ...config, textModel: e.target.value })
             }
-            placeholder="gpt-4o-mini"
+            placeholder="Qwen/Qwen3-8B"
           />
         </div>
       </div>
@@ -112,7 +126,7 @@ export const AISettingsTab = () => {
         <button
           className="ai-settings-btn primary"
           onClick={handleSave}
-          disabled={!config.apiKey || !config.baseUrl}
+          disabled={!config.baseUrl}
         >
           {saved ? "已保存 ✓" : "保存配置"}
         </button>

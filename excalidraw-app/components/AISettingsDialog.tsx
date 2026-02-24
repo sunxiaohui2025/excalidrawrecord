@@ -53,11 +53,12 @@ export const AISettingsDialog: React.FC<AISettingsDialogProps> = ({
 
   const handleClear = () => {
     clearAIConfigFromLocalStorage();
+    // 清除后恢复默认值
     setConfig({
       apiKey: "",
-      baseUrl: "",
-      visionModel: "",
-      textModel: "",
+      baseUrl: "https://api.siliconflow.cn/v1",
+      visionModel: "Qwen/Qwen3-VL-32B-Instruct",
+      textModel: "Qwen/Qwen3-8B",
     });
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
@@ -117,7 +118,7 @@ export const AISettingsDialog: React.FC<AISettingsDialogProps> = ({
               onChange={(e) =>
                 setConfig({ ...config, visionModel: e.target.value })
               }
-              placeholder="gpt-4o"
+              placeholder="Qwen/Qwen3-VL-32B-Instruct"
             />
           </div>
 
@@ -129,7 +130,7 @@ export const AISettingsDialog: React.FC<AISettingsDialogProps> = ({
               onChange={(e) =>
                 setConfig({ ...config, textModel: e.target.value })
               }
-              placeholder="gpt-4o-mini"
+              placeholder="Qwen/Qwen3-8B"
             />
           </div>
         </div>
@@ -138,7 +139,7 @@ export const AISettingsDialog: React.FC<AISettingsDialogProps> = ({
           <button
             className="ai-settings-btn primary"
             onClick={handleSave}
-            disabled={!config.apiKey || !config.baseUrl}
+            disabled={!config.baseUrl}
           >
             {saved ? "已保存 ✓" : "保存配置"}
           </button>
