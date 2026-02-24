@@ -33,9 +33,13 @@ export const AISettingsDialog: React.FC<AISettingsDialogProps> = ({
     } else {
       setConfig({
         apiKey: import.meta.env.VITE_APP_AI_API_KEY || "",
-        baseUrl: import.meta.env.VITE_APP_AI_BASE_URL || "",
-        visionModel: import.meta.env.VITE_APP_AI_VISION_MODEL || "",
-        textModel: import.meta.env.VITE_APP_AI_TEXT_MODEL || "",
+        baseUrl:
+          import.meta.env.VITE_APP_AI_BASE_URL ||
+          "https://api.siliconflow.cn/v1",
+        visionModel:
+          import.meta.env.VITE_APP_AI_VISION_MODEL ||
+          "Qwen/Qwen3-VL-32B-Instruct",
+        textModel: import.meta.env.VITE_APP_AI_TEXT_MODEL || "Qwen/Qwen3-8B",
       });
       setHasEnvConfig(!!import.meta.env.VITE_APP_AI_API_KEY);
     }
@@ -83,6 +87,14 @@ export const AISettingsDialog: React.FC<AISettingsDialogProps> = ({
               onChange={(e) => setConfig({ ...config, apiKey: e.target.value })}
               placeholder="sk-..."
             />
+            <a
+              href="https://cloud.siliconflow.cn/i/WFoChvZf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ai-settings-get-key-btn"
+            >
+              获取 API Key
+            </a>
           </div>
 
           <div className="ai-settings-field">
