@@ -152,7 +152,7 @@ export const SlideshowRecordMode: React.FC<SlideshowRecordModeProps> = ({
 
       if (element) {
         excalidrawAPI.scrollToContent(element, {
-          animate: true,
+          animate: false,
           fitToContent: true,
           viewportZoomFactor: 0.95,
         });
@@ -161,7 +161,7 @@ export const SlideshowRecordMode: React.FC<SlideshowRecordModeProps> = ({
     [excalidrawAPI, slides],
   );
 
-  // 执行幻灯片切换（带录制淡出淡入效果，不暂停录制）
+  // 执行幻灯片切换（禁用动画以获得更流畅的录制效果）
   const switchToSlide = useCallback(
     async (newIndex: number) => {
       if (
@@ -175,46 +175,13 @@ export const SlideshowRecordMode: React.FC<SlideshowRecordModeProps> = ({
 
       setIsSwitching(true);
 
-      // 第一步：开始淡出（200ms）
-      if (isRecording && startFadeOut) {
-        startFadeOut();
-      }
-
-      // 等待淡出到一半时开始切换
-      await new Promise((resolve) => setTimeout(resolve, 150));
-
-      // 切换幻灯片（录制继续）
+      // 立即切换幻灯片（无动画）
       setCurrentIndex(newIndex);
       scrollToSlide(newIndex);
 
-      // 等待滚动动画和淡出完成
-      await new Promise((resolve) => setTimeout(resolve, 200));
-
-      // 第二步：开始淡入（200ms）
-      if (isRecording && startFadeIn) {
-        startFadeIn();
-      }
-
-      // 等待淡入完成
-      await new Promise((resolve) => setTimeout(resolve, 200));
-
-      // 清除淡出状态
-      if (clearFade) {
-        clearFade();
-      }
-
       setIsSwitching(false);
     },
-    [
-      currentIndex,
-      slides.length,
-      isSwitching,
-      isRecording,
-      scrollToSlide,
-      startFadeOut,
-      startFadeIn,
-      clearFade,
-    ],
+    [currentIndex, slides.length, isSwitching, scrollToSlide],
   );
 
   // 键盘事件监听
