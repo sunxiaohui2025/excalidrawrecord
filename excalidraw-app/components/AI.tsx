@@ -8,15 +8,67 @@ import {
 } from "@excalidraw/excalidraw";
 import { getDataURL } from "@excalidraw/excalidraw/data/blob";
 
+import { useState } from "react";
+
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
+import type { TTTDDialog } from "@excalidraw/excalidraw/components/TTDDialog/types";
 
 import { TTDIndexedDBAdapter } from "../data/TTDStorage";
+import { getAIConfig, hasAIConfig } from "../data/AIConfigStorage";
+
+import { AISettingsDialog } from "./AISettingsDialog";
+
+const AIWelcomeScreen = ({
+  onOpenSettings,
+}: {
+  onOpenSettings: () => void;
+}) => {
+  return (
+    <div className="chat-interface__welcome-screen__welcome-message">
+      <h3>AI 图表生成</h3>
+      <p>输入描述，AI 将自动生成流程图、时序图等多种图表</p>
+      <p>支持的图表类型：流程图、时序图、类图、状态图、甘特图等</p>
+      <button
+        className="ai-settings-link-btn"
+        onClick={onOpenSettings}
+        style={{
+          marginTop: "1rem",
+          padding: "0.5rem 1rem",
+          background: "var(--color-primary)",
+          color: "#fff",
+          border: "none",
+          borderRadius: "var(--border-radius-lg)",
+          cursor: "pointer",
+          fontWeight: 600,
+        }}
+      >
+        {hasAIConfig() ? "⚙️ 已配置 AI" : "⚙️ 配置 AI"}
+      </button>
+    </div>
+  );
+};
 
 export const AIComponents = ({
   excalidrawAPI,
 }: {
   excalidrawAPI: ExcalidrawImperativeAPI;
 }) => {
+  const [showAISettings, setShowAISettings] = useState(false);
+
+  const getConfig = () => {
+    const config = getAIConfig();
+    if (!config || !config.apiKey || !config.baseUrl) {
+      throw new Error(
+        "AI configuration missing. Please configure your API key in AI Settings.",
+      );
+    }
+    return config;
+  };
+
+  const renderWelcomeScreen: TTTDDialog.renderWelcomeScreen = () => {
+    return <AIWelcomeScreen onOpenSettings={() => setShowAISettings(true)} />;
+  };
+
   return (
     <>
       <DiagramToCodePlugin
@@ -39,15 +91,7 @@ export const AIComponents = ({
 
           const textFromFrameChildren = getTextFromElements(children);
 
-          const apiKey = import.meta.env.VITE_APP_AI_API_KEY;
-          const baseUrl = import.meta.env.VITE_APP_AI_BASE_URL;
-          const visionModel = import.meta.env.VITE_APP_AI_VISION_MODEL;
-
-          if (!apiKey || !baseUrl || !visionModel) {
-            throw new Error(
-              "AI configuration missing. Please check .env file.",
-            );
-          }
+          const { apiKey, baseUrl, visionModel } = getConfig();
 
           const systemPrompt = `你是一位精通 HTML 和 CSS 的 Web 开发专家。
 你的任务是将提供的线框图转换为使用 Tailwind CSS 的单个 HTML 文件。
@@ -97,12 +141,10 @@ export const AIComponents = ({
             const json = await response.json();
             let html = json.choices?.[0]?.message?.content || "";
 
-            // Extract HTML from markdown code blocks if present
             const match = html.match(/```html\n([\s\S]*?)\n```/);
             if (match) {
               html = match[1];
             } else {
-              // Cleanup generic markdown wrappers if specific html tag missing
               html = html.replace(/^```\w*\n/, "").replace(/\n```$/, "");
             }
 
@@ -119,16 +161,11 @@ export const AIComponents = ({
       />
 
       <TTDDialog
+        renderWelcomeScreen={renderWelcomeScreen}
         onTextSubmit={async (props) => {
           const { onChunk, onStreamCreated, signal, messages } = props;
 
-          const apiKey = import.meta.env.VITE_APP_AI_API_KEY;
-          const baseUrl = import.meta.env.VITE_APP_AI_BASE_URL;
-          const textModel = import.meta.env.VITE_APP_AI_TEXT_MODEL;
-
-          if (!apiKey || !baseUrl || !textModel) {
-            throw new Error("AI configuration missing");
-          }
+          const { apiKey, baseUrl, textModel } = getConfig();
 
           const systemPrompt: {
             role: "system";
@@ -178,6 +215,9 @@ flowchart TD
         }}
         persistenceAdapter={TTDIndexedDBAdapter}
       />
+      {showAISettings && (
+        <AISettingsDialog onClose={() => setShowAISettings(false)} />
+      )}
     </>
   );
 };

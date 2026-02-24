@@ -13,6 +13,7 @@ import TTDDialogTabs from "./TTDDialogTabs";
 import { TTDDialogTabTriggers } from "./TTDDialogTabTriggers";
 import { TTDDialogTabTrigger } from "./TTDDialogTabTrigger";
 import { TTDDialogTab } from "./TTDDialogTab";
+import { AISettingsTab } from "./AISettingsTab";
 
 import "./TTDDialog.scss";
 
@@ -54,7 +55,7 @@ const TTDDialogBase = withInternalFallback(
     tab,
     ...rest
   }: {
-    tab: "text-to-diagram" | "mermaid";
+    tab: "text-to-diagram" | "mermaid" | "ai-settings";
   } & (
     | {
         onTextSubmit(
@@ -112,11 +113,16 @@ const TTDDialogBase = withInternalFallback(
                   {t("labels.textToDiagram")}
                 </TTDDialogTabTrigger>
                 <TTDDialogTabTrigger tab="mermaid">Mermaid</TTDDialogTabTrigger>
+                <TTDDialogTabTrigger tab="ai-settings">
+                  AI 设置
+                </TTDDialogTabTrigger>
               </TTDDialogTabTriggers>
               <div className="ttd-dialog-desc">
                 {tab === "text-to-diagram"
                   ? "输入描述，AI 自动生成图表。例如：生成一个用户登录流程图"
-                  : "直接粘贴 Mermaid 代码生成图表"}
+                  : tab === "mermaid"
+                  ? "直接粘贴 Mermaid 代码生成图表"
+                  : "配置 AI API 设置"}
               </div>
             </>
           )}
@@ -137,6 +143,9 @@ const TTDDialogBase = withInternalFallback(
               mermaidToExcalidrawLib={mermaidToExcalidrawLib}
               isActive={tab === "mermaid"}
             />
+          </TTDDialogTab>
+          <TTDDialogTab className="ttd-dialog-content" tab="ai-settings">
+            <AISettingsTab />
           </TTDDialogTab>
         </TTDDialogTabs>
       </Dialog>

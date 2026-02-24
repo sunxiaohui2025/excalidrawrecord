@@ -27,3 +27,6 @@ dev-dist
 html
 meta*.json
 .claude
+
+# Local Netlify folder
+.netlify
