@@ -699,20 +699,98 @@ export const useScreenRecorder = ({
             // 使用当前 canvas 尺寸（可能因 recordingArea 而改变）
             const canvasWidth = canvas.width;
             const canvasHeight = canvas.height;
-            const camSize = Math.min(
+
+            // 获取 CameraOverlay DOM 元素的实际位置和尺寸
+            const cameraOverlay = document.querySelector(
+              ".camera-overlay",
+            ) as HTMLElement;
+
+            let camX = padding;
+            let camY = padding;
+            let camSize = Math.min(
               cameraSize,
               canvasWidth / 4,
               canvasHeight / 4,
             );
-            let camX = padding;
-            let camY = padding;
 
-            if (cameraPosition.includes("right")) {
-              camX = canvasWidth - camSize - padding;
+            if (cameraOverlay && recordingMode === "canvas") {
+              // Canvas 模式：直接获取 DOM 元素的位置和尺寸
+              const overlayRect = cameraOverlay.getBoundingClientRect();
+              const container = document.querySelector(".excalidraw");
+
+              if (container) {
+                const canvases = container.querySelectorAll("canvas");
+                if (canvases.length > 0) {
+                  const sourceCanvas = canvases[0];
+                  const sourceRect = sourceCanvas.getBoundingClientRect();
+
+                  // 计算源 canvas 到录制 canvas 的缩放比例
+                  const sourceScaleX = sourceCanvas.width / sourceRect.width;
+                  const sourceScaleY = sourceCanvas.height / sourceRect.height;
+
+                  // 计算录制内容的实际显示区域（考虑 padding 和裁剪）
+                  const contentWidth = canvasWidth - padding * 2;
+                  const contentHeight = canvasHeight - padding * 2;
+
+                  // 计算源 canvas 的裁剪区域
+                  const cSw = sourceCanvas.width;
+                  const cSh = sourceCanvas.height;
+                  let targetRatio = 16 / 9;
+                  if (aspectRatio && aspectRatio !== "custom") {
+                    const [w, h] = aspectRatio.split("/").map(Number);
+                    if (!isNaN(w) && !isNaN(h) && h !== 0) {
+                      targetRatio = w / h;
+                    }
+                  }
+                  let srcW = cSw;
+                  let srcH = cSh;
+                  if (srcW / srcH > targetRatio) {
+                    srcW = srcH * targetRatio;
+                  } else {
+                    srcH = srcW / targetRatio;
+                  }
+                  const srcX = (cSw - srcW) / 2;
+                  const srcY = (cSh - srcH) / 2;
+
+                  // 将 overlay 的屏幕坐标转换为源 canvas 内部坐标
+                  const relX =
+                    (overlayRect.left - sourceRect.left) * sourceScaleX;
+                  const relY =
+                    (overlayRect.top - sourceRect.top) * sourceScaleY;
+
+                  // 映射到录制 canvas 的坐标
+                  camX = padding + (relX - srcX) * (contentWidth / srcW);
+                  camY = padding + (relY - srcY) * (contentHeight / srcH);
+
+                  // 计算摄像头尺寸
+                  const overlaySize =
+                    overlayRect.width * sourceScaleX * (contentWidth / srcW);
+                  camSize = Math.min(
+                    overlaySize,
+                    canvasWidth / 4,
+                    canvasHeight / 4,
+                  );
+                }
+              }
+            } else {
+              // 使用预设位置（当无法获取 DOM 元素或 screen 模式时）
+              if (cameraPosition.includes("right")) {
+                camX = canvasWidth - camSize - padding;
+              }
+              if (cameraPosition.includes("bottom")) {
+                camY = canvasHeight - camSize - padding;
+              }
             }
-            if (cameraPosition.includes("bottom")) {
-              camY = canvasHeight - camSize - padding;
-            }
+
+            // 确保摄像头在 canvas 范围内
+            camX = Math.max(
+              padding,
+              Math.min(camX, canvasWidth - camSize - padding),
+            );
+            camY = Math.max(
+              padding,
+              Math.min(camY, canvasHeight - camSize - padding),
+            );
 
             ctx.save();
             ctx.shadowColor = "rgba(0,0,0,0.5)";
@@ -728,6 +806,10 @@ export const useScreenRecorder = ({
             );
             ctx.clip();
 
+            // 水平翻转摄像头画面（镜像效果，与预览一致）
+            ctx.translate(camX + camSize, camY);
+            ctx.scale(-1, 1);
+
             const cVw = currentCameraVideo.videoWidth || 1280;
             const cVh = currentCameraVideo.videoHeight || 720;
             const cMin = Math.min(cVw, cVh);
@@ -740,8 +822,8 @@ export const useScreenRecorder = ({
               cSy,
               cMin,
               cMin,
-              camX,
-              camY,
+              0,
+              0,
               camSize,
               camSize,
             );
@@ -1053,7 +1135,7 @@ export const useScreenRecorder = ({
           a.style.display = "none";
           a.href = url;
           const extension = videoFormat;
-          a.download = `excalidraw-recording-${new Date().toISOString()}.${extension}`;
+          a.download = `CC-DrawRecord-${new Date().toISOString()}.${extension}`;
           a.click();
           window.URL.revokeObjectURL(url);
         }

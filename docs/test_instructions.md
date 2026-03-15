@@ -35,7 +35,7 @@
 **预期结果**:
 
 - 浏览器应自动触发文件下载。
-- 下载的文件名格式应为 `excalidraw-recording-YYYY-MM-DDTHH:mm:ss.sssZ.extension`。
+- 下载的文件名格式应为 `CC-DrawRecord-YYYY-MM-DDTHH:mm:ss.sssZ.extension`。
 - 下载的视频文件应能正常播放，且包含录制的内容。
 
 **修复原理**:

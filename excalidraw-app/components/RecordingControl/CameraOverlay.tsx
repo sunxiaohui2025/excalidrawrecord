@@ -36,10 +36,12 @@ export const CameraOverlay = ({
   const [isDragging, setIsDragging] = useState(false);
   const dragOffset = useRef({ x: 0, y: 0 });
 
-  // Reset drag position when the position prop changes (e.g. from settings)
+  // Reset drag position only when position prop changes (e.g. from settings)
+  // Note: We don't reset when containerRect changes to avoid losing drag position
+  // during recording or window resize
   useEffect(() => {
     setDragPosition(null);
-  }, [position, containerRect]);
+  }, [position]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.stopPropagation();
