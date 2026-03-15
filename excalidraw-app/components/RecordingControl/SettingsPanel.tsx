@@ -250,11 +250,7 @@ export const SettingsPanel = ({
   }, [previewRipples]);
 
   const toggleSection = (section: string) => {
-    setOpenSections((prev) =>
-      prev.includes(section)
-        ? prev.filter((s) => s !== section)
-        : [...prev, section],
-    );
+    setOpenSections((prev) => (prev.includes(section) ? [] : [section]));
   };
 
   const getPreviewClass = (ratio: string) => {

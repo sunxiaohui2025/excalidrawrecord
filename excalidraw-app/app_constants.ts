@@ -37,25 +37,25 @@ export const FIREBASE_STORAGE_PREFIXES = {
 export const ROOM_ID_BYTES = 10;
 
 export const STORAGE_KEYS = {
-  LOCAL_STORAGE_ELEMENTS: "excalidraw",
-  LOCAL_STORAGE_APP_STATE: "excalidraw-state",
-  LOCAL_STORAGE_COLLAB: "excalidraw-collab",
-  LOCAL_STORAGE_THEME: "excalidraw-theme",
-  LOCAL_STORAGE_DEBUG: "excalidraw-debug",
+  LOCAL_STORAGE_ELEMENTS: "ccdrawrecord",
+  LOCAL_STORAGE_APP_STATE: "ccdrawrecord-state",
+  LOCAL_STORAGE_COLLAB: "ccdrawrecord-collab",
+  LOCAL_STORAGE_THEME: "ccdrawrecord-theme",
+  LOCAL_STORAGE_DEBUG: "ccdrawrecord-debug",
   VERSION_DATA_STATE: "version-dataState",
   VERSION_FILES: "version-files",
 
-  IDB_LIBRARY: "excalidraw-library",
-  IDB_TTD_CHATS: "excalidraw-ttd-chats",
+  IDB_LIBRARY: "ccdrawrecord-library",
+  IDB_TTD_CHATS: "ccdrawrecord-ttd-chats",
 
   // do not use apart from migrations
-  __LEGACY_LOCAL_STORAGE_LIBRARY: "excalidraw-library",
+  __LEGACY_LOCAL_STORAGE_LIBRARY: "ccdrawrecord-library",
 } as const;
 
 export const COOKIES = {
-  AUTH_STATE_COOKIE: "excplus-auth",
+  AUTH_STATE_COOKIE: "ccdrawrecord-auth",
 } as const;
 
-export const isExcalidrawPlusSignedUser = document.cookie.includes(
+export const isCCDRecordPlusSignedUser = document.cookie.includes(
   COOKIES.AUTH_STATE_COOKIE,
 );

@@ -87,7 +87,7 @@ import {
 } from "./app-jotai";
 import {
   FIREBASE_STORAGE_PREFIXES,
-  isExcalidrawPlusSignedUser,
+  isCCDRecordPlusSignedUser,
   STORAGE_KEYS,
   SYNC_BROWSER_TABS_TIMEOUT,
 } from "./app_constants";
@@ -1198,7 +1198,7 @@ const ExcalidrawWrapper = () => {
             <div className="excalidraw-ui-top-right">
               {excalidrawAPI?.getEditorInterface().formFactor === "desktop" && (
                 <ExcalidrawPlusPromoBanner
-                  isSignedIn={isExcalidrawPlusSignedUser}
+                  isSignedIn={isCCDRecordPlusSignedUser}
                   onClick={() => {
                     excalidrawAPI?.updateScene({
                       appState: {
@@ -1567,7 +1567,7 @@ const ExcalidrawWrapper = () => {
                 );
               },
             },
-            ...(isExcalidrawPlusSignedUser
+            ...(isCCDRecordPlusSignedUser
               ? [
                   {
                     ...ExcalidrawPlusAppCommand,

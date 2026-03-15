@@ -4,7 +4,7 @@ import { useI18n } from "@excalidraw/excalidraw/i18n";
 import { WelcomeScreen } from "@excalidraw/excalidraw/index";
 import React from "react";
 
-import { isExcalidrawPlusSignedUser } from "../app_constants";
+import { isCCDRecordPlusSignedUser } from "../app_constants";
 
 export const AppWelcomeScreen: React.FC<{
   onCollabDialogOpen: () => any;
@@ -13,9 +13,9 @@ export const AppWelcomeScreen: React.FC<{
   const { t } = useI18n();
   let headingContent;
 
-  if (isExcalidrawPlusSignedUser) {
+  if (isCCDRecordPlusSignedUser) {
     headingContent = t("welcomeScreen.app.center_heading_plus")
-      .split(/(Excalidraw\+)/)
+      .split(/(CC-DrawRecord\+)/)
       .map((bit, idx) => {
         if (bit === "AI+Draw") {
           return (
@@ -23,7 +23,7 @@ export const AppWelcomeScreen: React.FC<{
               style={{ pointerEvents: POINTER_EVENTS.inheritFromUI }}
               href={`${
                 import.meta.env.VITE_APP_PLUS_APP
-              }?utm_source=excalidraw&utm_medium=app&utm_content=welcomeScreenSignedInUser`}
+              }?utm_source=ccdrawrecord&utm_medium=app&utm_content=welcomeScreenSignedInUser`}
               key={idx}
             >
               AI+Draw
@@ -35,11 +35,13 @@ export const AppWelcomeScreen: React.FC<{
   } else {
     headingContent = (
       <>
-        {t("welcomeScreen.app.center_heading")}
+        <span style={{ fontSize: "0.9em", opacity: 0.8 }}>
+          基于 Excalidraw 二次开发的白板录制工具
+        </span>
         <br />
-        {t("welcomeScreen.app.center_heading_line2")}
-        <br />
-        {t("welcomeScreen.app.center_heading_line3")}
+        <span style={{ fontSize: "0.85em", opacity: 0.7 }}>
+          支持手绘风格画布白板 + 屏幕录制功能
+        </span>
       </>
     );
   }
@@ -52,7 +54,21 @@ export const AppWelcomeScreen: React.FC<{
       <WelcomeScreen.Hints.ToolbarHint />
       <WelcomeScreen.Hints.HelpHint />
       <WelcomeScreen.Center>
-        <WelcomeScreen.Center.Logo />
+        <WelcomeScreen.Center.Logo>
+          <div
+            style={{
+              fontSize: "3.5rem",
+              fontWeight: 700,
+              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+              letterSpacing: "-0.02em",
+            }}
+          >
+            CC-DrawRecord
+          </div>
+        </WelcomeScreen.Center.Logo>
         <WelcomeScreen.Center.Heading>
           {headingContent}
         </WelcomeScreen.Center.Heading>
@@ -64,11 +80,11 @@ export const AppWelcomeScreen: React.FC<{
               onSelect={() => props.onCollabDialogOpen()}
             />
           )}
-          {!isExcalidrawPlusSignedUser && (
+          {!isCCDRecordPlusSignedUser && (
             <WelcomeScreen.Center.MenuItemLink
               href={`${
                 import.meta.env.VITE_APP_PLUS_LP
-              }/plus?utm_source=excalidraw&utm_medium=app&utm_content=welcomeScreenGuest`}
+              }/plus?utm_source=ccdrawrecord&utm_medium=app&utm_content=welcomeScreenGuest`}
               shortcut={null}
               icon={loginIcon}
             >
