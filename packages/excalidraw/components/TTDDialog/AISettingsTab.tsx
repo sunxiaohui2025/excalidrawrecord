@@ -32,8 +32,7 @@ export const AISettingsTab = () => {
         visionModel:
           import.meta.env.VITE_APP_AI_VISION_MODEL ||
           "Qwen/Qwen3-VL-32B-Instruct",
-        textModel:
-          import.meta.env.VITE_APP_AI_TEXT_MODEL || "Qwen/Qwen3-8B",
+        textModel: import.meta.env.VITE_APP_AI_TEXT_MODEL || "Qwen/Qwen3-8B",
       });
       setHasEnvConfig(!!import.meta.env.VITE_APP_AI_API_KEY);
     }

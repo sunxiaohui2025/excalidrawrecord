@@ -12,7 +12,7 @@ import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import type { TTTDDialog } from "@excalidraw/excalidraw/components/TTDDialog/types";
 
 import { TTDIndexedDBAdapter } from "../data/TTDStorage";
-import { getAIConfig, hasAIConfig } from "../data/AIConfigStorage";
+import { getAIConfig } from "../data/AIConfigStorage";
 
 const AIWelcomeScreen = () => {
   return (

@@ -1,124 +1,188 @@
-<a href="https://excalidraw.com/" target="_blank" rel="noopener">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" alt="Excalidraw" srcset="https://excalidraw.nyc3.cdn.digitaloceanspaces.com/github/excalidraw_github_cover_2_dark.png" />
-    <img alt="Excalidraw" src="https://excalidraw.nyc3.cdn.digitaloceanspaces.com/github/excalidraw_github_cover_2.png" />
-  </picture>
-</a>
+# Excalidraw Record
 
-<h4 align="center">
-  <a href="https://excalidraw.com">Excalidraw Editor</a> |
-  <a href="https://plus.excalidraw.com/blog">Blog</a> |
-  <a href="https://docs.excalidraw.com">Documentation</a> |
-  <a href="https://plus.excalidraw.com">AI+Draw</a>
-</h4>
+基于 [excalidraw/excalidraw](https://github.com/excalidraw/excalidraw) 二次开发的白板录制工具
 
-<div align="center">
-  <h2>
-    An open source virtual hand-drawn style whiteboard. </br>
-    Collaborative and end-to-end encrypted. </br>
-  <br />
-  </h2>
-</div>
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Node Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](package.json)
 
-<br />
-<p align="center">
-  <a href="https://github.com/excalidraw/excalidraw/blob/master/LICENSE">
-    <img alt="Excalidraw is released under the MIT license." src="https://img.shields.io/badge/license-MIT-blue.svg"  /></a>
-  <a href="https://www.npmjs.com/package/@excalidraw/excalidraw">
-    <img alt="npm downloads/month" src="https://img.shields.io/npm/dm/@excalidraw/excalidraw"  /></a>
-  <a href="https://docs.excalidraw.com/docs/introduction/contributing">
-    <img alt="PRs welcome!" src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat"  /></a>
-  <a href="https://discord.gg/UexuTaE">
-    <img alt="Chat on Discord" src="https://img.shields.io/discord/723672430744174682?color=738ad6&label=Chat%20on%20Discord&logo=discord&logoColor=ffffff&widge=false"/></a>
-  <a href="https://deepwiki.com/excalidraw/excalidraw">
-    <img alt="Ask DeepWiki" src="https://deepwiki.com/badge.svg" /></a>
-  <a href="https://twitter.com/excalidraw">
-    <img alt="Follow Excalidraw on Twitter" src="https://img.shields.io/twitter/follow/excalidraw.svg?label=follow+@excalidraw&style=social&logo=twitter"/></a>
-</p>
+## ✨ 功能特性
 
-<div align="center">
-  <figure>
-    <a href="https://excalidraw.com" target="_blank" rel="noopener">
-      <img src="https://excalidraw.nyc3.cdn.digitaloceanspaces.com/github%2Fproduct_showcase.png" alt="Product showcase" />
-    </a>
-    <figcaption>
-      <p align="center">
-        Create beautiful hand-drawn like diagrams, wireframes, or whatever you like.
-      </p>
-    </figcaption>
-  </figure>
-</div>
+### 🎨 白板功能
+- **手绘风格画布** - 自然流畅的手绘效果，支持多种图形元素
+- **多人协作** - 实时多人协同编辑，支持链接分享
+- **丰富的图形库** - 矩形、圆形、箭头、线条、自由绘制、文字等
+- **无限画布** - 自由缩放和滚动，无限创作空间
+- **本地存储** - 自动保存到浏览器本地，数据不丢失
+- **导出支持** - 支持 PNG、SVG、JSON 等多种格式导出
 
-## Features
+### 📹 录屏功能
+- **画布录制** - 直接录制白板画布内容
+- **屏幕录制** - 录制整个屏幕或指定窗口
+- **摄像头叠加** - 画中画模式，支持摄像头画面叠加
+- **鼠标高亮** - 录制时显示鼠标位置和点击效果
+- **自定义区域** - 支持指定录制区域
+- **多种比例** - 16:9、4:3、9:16、1:1 等多种视频比例
+- **多种格式** - 支持 WebM、MP4、MOV 等视频格式
 
-The Excalidraw editor (npm package) supports:
+### 📽️ PPT 录制模式
+- **幻灯片录制** - 基于画框元素的 PPT 式录制
+- **自动切换** - 支持幻灯片之间的淡入淡出切换效果
+- **提词器** - 内置提词器功能，支持滚动播放
+- **录制控制** - 暂停、继续、停止等完整控制
 
-- 💯&nbsp;Free & open-source.
-- 🎨&nbsp;Infinite, canvas-based whiteboard.
-- ✍️&nbsp;Hand-drawn like style.
-- 🌓&nbsp;Dark mode.
-- 🏗️&nbsp;Customizable.
-- 📷&nbsp;Image support.
-- 😀&nbsp;Shape libraries support.
-- 🌐&nbsp;Localization (i18n) support.
-- 🖼️&nbsp;Export to PNG, SVG & clipboard.
-- 💾&nbsp;Open format - export drawings as an `.excalidraw` json file.
-- ⚒️&nbsp;Wide range of tools - rectangle, circle, diamond, arrow, line, free-draw, eraser...
-- ➡️&nbsp;Arrow-binding & labeled arrows.
-- 🔙&nbsp;Undo / Redo.
-- 🔍&nbsp;Zoom and panning support.
+## 🚀 快速开始
 
-## Excalidraw.com
+### 环境要求
+- Node.js >= 18.0.0
+- Yarn 1.22.22
 
-The app hosted at [excalidraw.com](https://excalidraw.com) is a minimal showcase of what you can build with Excalidraw. Its [source code](https://github.com/excalidraw/excalidraw/tree/master/excalidraw-app) is part of this repository as well, and the app features:
-
-- 📡&nbsp;PWA support (works offline).
-- 🤼&nbsp;Real-time collaboration.
-- 🔒&nbsp;End-to-end encryption.
-- 💾&nbsp;Local-first support (autosaves to the browser).
-- 🔗&nbsp;Shareable links (export to a readonly link you can share with others).
-
-We'll be adding these features as drop-in plugins for the npm package in the future.
-
-## Quick start
-
-**Note:** following instructions are for installing the Excalidraw [npm package](https://www.npmjs.com/package/@excalidraw/excalidraw) when integrating Excalidraw into your own app. To run the repository locally for development, please refer to our [Development Guide](https://docs.excalidraw.com/docs/introduction/development).
-
-Use `npm` or `yarn` to install the package.
+### 安装依赖
 
 ```bash
-npm install react react-dom @excalidraw/excalidraw
-# or
-yarn add react react-dom @excalidraw/excalidraw
+yarn install
 ```
 
-Check out our [documentation](https://docs.excalidraw.com/docs/@excalidraw/excalidraw/installation) for more details!
+### 开发模式
 
-## Contributing
+```bash
+# 启动开发服务器
+yarn start
 
-- Missing something or found a bug? [Report here](https://github.com/excalidraw/excalidraw/issues).
-- Want to contribute? Check out our [contribution guide](https://docs.excalidraw.com/docs/introduction/contributing) or let us know on [Discord](https://discord.gg/UexuTaE).
-- Want to help with translations? See the [translation guide](https://docs.excalidraw.com/docs/introduction/contributing#translating).
+# 或先构建包再启动示例
+yarn start:example
+```
 
-## Integrations
+### 构建项目
 
-- [VScode extension](https://marketplace.visualstudio.com/items?itemName=pomdtr.excalidraw-editor)
-- [npm package](https://www.npmjs.com/package/@excalidraw/excalidraw)
+```bash
+# 构建所有包
+yarn build:packages
 
-## Who's integrating Excalidraw
+# 构建应用
+yarn build:app
 
-[Google Cloud](https://googlecloudcheatsheet.withgoogle.com/architecture) • [Meta](https://meta.com/) • [CodeSandbox](https://codesandbox.io/) • [Obsidian Excalidraw](https://github.com/zsviczian/obsidian-excalidraw-plugin) • [Replit](https://replit.com/) • [Slite](https://slite.com/) • [Notion](https://notion.so/) • [HackerRank](https://www.hackerrank.com/) • and many others
+# 完整构建
+yarn build
+```
 
-## Sponsors & support
+### 测试
 
-If you like the project, you can become a sponsor at [Open Collective](https://opencollective.com/excalidraw) or use [AI+Draw](https://plus.excalidraw.com/).
+```bash
+# 运行所有测试
+yarn test:all
 
-## Thank you for supporting Excalidraw
+# 运行单元测试
+yarn test:app
 
-[<img src="https://opencollective.com/excalidraw/tiers/sponsors/0/avatar.svg?avatarHeight=120"/>](https://opencollective.com/excalidraw/tiers/sponsors/0/website) [<img src="https://opencollective.com/excalidraw/tiers/sponsors/1/avatar.svg?avatarHeight=120"/>](https://opencollective.com/excalidraw/tiers/sponsors/1/website) [<img src="https://opencollective.com/excalidraw/tiers/sponsors/2/avatar.svg?avatarHeight=120"/>](https://opencollective.com/excalidraw/tiers/sponsors/2/website) [<img src="https://opencollective.com/excalidraw/tiers/sponsors/3/avatar.svg?avatarHeight=120"/>](https://opencollective.com/excalidraw/tiers/sponsors/3/website) [<img src="https://opencollective.com/excalidraw/tiers/sponsors/4/avatar.svg?avatarHeight=120"/>](https://opencollective.com/excalidraw/tiers/sponsors/4/website) [<img src="https://opencollective.com/excalidraw/tiers/sponsors/5/avatar.svg?avatarHeight=120"/>](https://opencollective.com/excalidraw/tiers/sponsors/5/website) [<img src="https://opencollective.com/excalidraw/tiers/sponsors/6/avatar.svg?avatarHeight=120"/>](https://opencollective.com/excalidraw/tiers/sponsors/6/website) [<img src="https://opencollective.com/excalidraw/tiers/sponsors/7/avatar.svg?avatarHeight=120"/>](https://opencollective.com/excalidraw/tiers/sponsors/7/website) [<img src="https://opencollective.com/excalidraw/tiers/sponsors/8/avatar.svg?avatarHeight=120"/>](https://opencollective.com/excalidraw/tiers/sponsors/8/website) [<img src="https://opencollective.com/excalidraw/tiers/sponsors/9/avatar.svg?avatarHeight=120"/>](https://opencollective.com/excalidraw/tiers/sponsors/9/website) [<img src="https://opencollective.com/excalidraw/tiers/sponsors/10/avatar.svg?avatarHeight=120"/>](https://opencollective.com/excalidraw/tiers/sponsors/10/website)
+# 代码检查
+yarn test:code
 
-<a href="https://opencollective.com/excalidraw#category-CONTRIBUTE" target="_blank"><img src="https://opencollective.com/excalidraw/tiers/backers.svg?avatarHeight=32"/></a>
+# TypeScript 类型检查
+yarn test:typecheck
+```
 
-Last but not least, we're thankful to these companies for offering their services for free:
+## 📁 项目结构
 
-[![Vercel](./.github/assets/vercel.svg)](https://vercel.com) [![Sentry](./.github/assets/sentry.svg)](https://sentry.io) [![Crowdin](./.github/assets/crowdin.svg)](https://crowdin.com)
+```
+excalidraw-record/
+├── excalidraw-app/          # 主应用程序
+│   ├── components/          # 组件目录
+│   │   └── RecordingControl/  # 录屏控制组件
+│   │       ├── ControlMenu.tsx       # 录制控制菜单
+│   │       ├── SettingsPanel.tsx     # 录制设置面板
+│   │       ├── CameraOverlay.tsx     # 摄像头叠加层
+│   │       ├── TeleprompterPanel.tsx # 提词器面板
+│   │       ├── SlideshowPanel.tsx    # 幻灯片面板
+│   │       ├── SlideshowRecordMode.tsx # PPT录制模式
+│   │       ├── RecordingFrame.tsx    # 录制框
+│   │       ├── useScreenRecorder.ts  # 录屏逻辑 Hook
+│   │       └── useRecordingDimensions.ts # 录制尺寸 Hook
+│   ├── collab/              # 协作功能
+│   ├── data/                # 数据管理
+│   └── App.tsx              # 主应用入口
+├── packages/                # 核心包
+│   ├── excalidraw/          # 白板核心库
+│   ├── element/             # 元素处理
+│   ├── common/              # 公共工具
+│   ├── math/                # 数学计算
+│   └── utils/               # 工具函数
+├── examples/                # 示例项目
+│   ├── with-nextjs/         # Next.js 集成示例
+│   └── with-script-in-browser/ # 浏览器脚本示例
+└── dev-docs/                # 开发文档
+```
+
+## 🎬 使用指南
+
+### 开始录制
+
+1. 点击画布右上角的录制控制菜单
+2. 选择录制模式（画布/屏幕）
+3. 配置录制设置（比例、格式、摄像头等）
+4. 点击录制按钮开始
+
+### PPT 录制模式
+
+1. 在白板上创建画框元素作为幻灯片
+2. 打开幻灯片录制面板
+3. 选择要录制的幻灯片
+4. 开始录制，使用方向键切换幻灯片
+
+### 提词器使用
+
+1. 点击提词器按钮打开面板
+2. 在文本框中输入台词内容
+3. 调整滚动速度和透明度
+4. 点击播放按钮开始滚动
+
+## ⚙️ 录制设置
+
+| 设置项 | 说明 | 可选值 |
+|--------|------|--------|
+| 视频比例 | 输出视频的长宽比 | 16:9、4:3、9:16、1:1、自定义 |
+| 视频格式 | 输出文件格式 | WebM(推荐)、MP4、MOV |
+| 背景 | 录制背景样式 | 渐变色、纯色、透明 |
+| 圆角 | 视频圆角大小 | 0-50px |
+| 内边距 | 录制区域边距 | 0-100px |
+| 摄像头位置 | 画中画位置 | 左上、右上、左下、右下 |
+| 摄像头大小 | 画中画尺寸 | 50-300px |
+| 鼠标高亮 | 显示鼠标效果 | 开/关 |
+| 鼠标颜色 | 高亮颜色 | 自定义颜色 |
+
+## 🛠️ 技术栈
+
+- **前端框架**: React 19
+- **构建工具**: Vite 5
+- **类型系统**: TypeScript 5.9
+- **状态管理**: Jotai
+- **样式方案**: SCSS + CSS Modules
+- **测试框架**: Vitest
+- **代码规范**: ESLint + Prettier
+
+## 🤝 参与贡献
+
+1. Fork 本仓库
+2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送分支 (`git push origin feature/AmazingFeature`)
+5. 创建 Pull Request
+
+### 开发规范
+
+- 提交前运行 `yarn test:all` 确保测试通过
+- 使用 `yarn fix` 自动修复代码格式问题
+- 遵循现有的代码风格和命名规范
+
+## 📄 许可证
+
+本项目基于 [MIT](LICENSE) 许可证开源
+
+## 🙏 致谢
+
+- [Excalidraw](https://github.com/excalidraw/excalidraw) - 优秀的开源白板工具
+- [Vite](https://vitejs.dev/) - 下一代前端构建工具
+- [React](https://react.dev/) - 用户界面构建库
+
+---
+
+**注意**: 本项目为 Excalidraw 的二次开发版本，添加了录屏和 PPT 录制功能。如需使用原版 Excalidraw，请访问 [官方仓库](https://github.com/excalidraw/excalidraw)。
