@@ -224,10 +224,7 @@ export const SettingsPanel = ({
   setCountdown,
 }: SettingsPanelProps) => {
   const [bgFilter, setBgFilter] = useState("all");
-  const [openSections, setOpenSections] = useState<string[]>([
-    "recording",
-    "appearance",
-  ]);
+  const [openSections, setOpenSections] = useState<string[]>([]);
 
   // Preview cursor ripple state
   const [previewRipples, setPreviewRipples] = useState<

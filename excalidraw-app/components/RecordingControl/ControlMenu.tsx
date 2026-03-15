@@ -183,6 +183,13 @@ export const ControlMenu = ({
         {TeleprompterIcon}
       </button>
       <button
+        className={clsx("control-btn", { active: showCamera })}
+        onClick={onToggleCamera}
+        title={showCamera ? "关闭摄像头" : "开启摄像头"}
+      >
+        {CameraIcon}
+      </button>
+      <button
         className={clsx("control-btn record-btn", { recording: isRecording })}
         onClick={onRecordClick}
         title={isRecording ? "停止录制" : "开始录制"}
