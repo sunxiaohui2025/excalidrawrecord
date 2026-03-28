@@ -4,15 +4,15 @@ import { CODES } from "@excalidraw/common";
 
 import { copiedStyles } from "../actions/actionStyles";
 import { Excalidraw } from "../index";
-import { API } from "../tests/helpers/api";
-import { Keyboard, Pointer, UI } from "../tests/helpers/ui";
+import { API } from "./helpers/api";
+import { Keyboard, Pointer, UI } from "./helpers/ui";
 import {
   act,
   fireEvent,
   render,
   screen,
   togglePopover,
-} from "../tests/test-utils";
+} from "./test-utils";
 
 const { h } = window;
 

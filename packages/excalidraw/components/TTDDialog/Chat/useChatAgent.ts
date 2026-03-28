@@ -1,9 +1,9 @@
 import { useAtom } from "../../../editor-jotai";
-import { chatHistoryAtom } from "../../TTDDialog/TTDContext";
+import { chatHistoryAtom } from "../TTDContext";
 import {
   addMessages,
   updateAssistantContent,
-} from "../../TTDDialog/utils/chat";
+} from "../utils/chat";
 
 export const useChatAgent = () => {
   const [chatHistory, setChatHistory] = useAtom(chatHistoryAtom);

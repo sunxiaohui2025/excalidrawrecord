@@ -4,9 +4,9 @@ import { actionSelectAll } from "../actions";
 import { t } from "../i18n";
 import { Excalidraw } from "../index";
 
-import { API } from "../tests/helpers/api";
-import { Keyboard, Pointer, UI } from "../tests/helpers/ui";
-import { render, unmountComponent } from "../tests/test-utils";
+import { API } from "./helpers/api";
+import { Keyboard, Pointer, UI } from "./helpers/ui";
+import { render, unmountComponent } from "./test-utils";
 
 import { getTextEditor } from "./queries/dom";
 
