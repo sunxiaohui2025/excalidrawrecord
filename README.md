@@ -186,3 +186,4 @@ excalidraw-record/
 ---
 
 **注意**: 本项目为 Excalidraw 的二次开发版本，添加了录屏和 PPT 录制功能。如需使用原版 Excalidraw，请访问 [官方仓库](https://github.com/excalidraw/excalidraw)。
+# excalidrawrecord
