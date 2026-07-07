@@ -1,11 +1,11 @@
-<img width宽度宽度宽度宽度宽度宽度宽度宽度宽度宽度宽度="1660" height="1161" alt="image图像图像图像图像图像图像图像图像图像图像图像" src="https://github.com/user-attachments/assets/061a8dc1-2561-4592-bc69-a7d5df7d9586" /># Excalidraw Record
+# Excalidraw Record
 
 基于 [excalidraw/excalidraw](https://github.com/excalidraw/excalidraw) 二次开发的白板录制工具
 
-[![License](https://img.shields.io/badge徽章徽章徽章徽章徽章徽章徽章徽章徽章徽章徽章徽章徽章徽章徽章徽章徽章徽章徽章徽章/license-MIT-blue.svg)](LICENSE)
-[![Node节点节点节点节点节点节点 Version](https://img.shields.io/badge徽章徽章徽章徽章徽章徽章徽章徽章徽章徽章徽章/node节点节点节点节点节点节点节点节点节点节点节点-%3E%3D18.0.0-brightgreen.svg)](package.json)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Node Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](package.json)
+![Uploading 68747470733a2f2f657863616c69647261772e6e7963332e63646e2e6469676974616c6f6365616e7370616365732e636f6d2f67697468756225324670726f647563745f73686f77636173652e706e67.png…]()
 
-![Uploading image图像图像图像图像图像图像图像图像图像.png…]()
 
 ## ✨ 功能特性
 
