@@ -1,9 +1,11 @@
-# Excalidraw Record
+<img width宽度宽度宽度宽度宽度宽度宽度宽度宽度宽度宽度="1660" height="1161" alt="image图像图像图像图像图像图像图像图像图像图像图像" src="https://github.com/user-attachments/assets/061a8dc1-2561-4592-bc69-a7d5df7d9586" /># Excalidraw Record
 
 基于 [excalidraw/excalidraw](https://github.com/excalidraw/excalidraw) 二次开发的白板录制工具
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Node Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](package.json)
+[![License](https://img.shields.io/badge徽章徽章徽章徽章徽章徽章徽章徽章徽章徽章徽章徽章徽章徽章徽章徽章徽章徽章徽章徽章/license-MIT-blue.svg)](LICENSE)
+[![Node节点节点节点节点节点节点 Version](https://img.shields.io/badge徽章徽章徽章徽章徽章徽章徽章徽章徽章徽章徽章/node节点节点节点节点节点节点节点节点节点节点节点-%3E%3D18.0.0-brightgreen.svg)](package.json)
+
+![Uploading image图像图像图像图像图像图像图像图像图像.png…]()
 
 ## ✨ 功能特性
 
@@ -33,52 +35,52 @@
 ## 🚀 快速开始
 
 ### 环境要求
-- Node.js >= 18.0.0
-- Yarn 1.22.22
+- Node节点节点节点节点.js >= 18.0.0
+- Yarn纱线纱线纱线 1.22.22
 
 ### 安装依赖
 
-```bash
-yarn install
+```bash猛击；狂欢猛击；狂欢
+yarn纱线纱线纱线 install安装安装安装
 ```
 
 ### 开发模式
 
-```bash
+```bash猛击；狂欢猛击；狂欢
 # 启动开发服务器
-yarn start
+yarn纱线纱线纱线纱线纱线 start
 
 # 或先构建包再启动示例
-yarn start:example
+yarn纱线纱线纱线纱线纱线纱线纱线纱线纱线 start:example
 ```
 
 ### 构建项目
 
-```bash
+```bash猛击；狂欢猛击；狂欢
 # 构建所有包
-yarn build:packages
+yarn纱线纱线纱线纱线纱线纱线纱线纱线纱线 build:packages
 
 # 构建应用
-yarn build:app
+yarn纱线纱线纱线纱线纱线纱线纱线 build:app
 
 # 完整构建
-yarn build
+yarn纱线纱线纱线纱线纱线 build
 ```
 
 ### 测试
 
-```bash
+```bash猛击；狂欢猛击；狂欢
 # 运行所有测试
-yarn test:all
+yarn纱线纱线纱线纱线纱线纱线 test:all
 
 # 运行单元测试
-yarn test:app
+yarn纱线纱线纱线纱线纱线纱线 test:app
 
 # 代码检查
-yarn test:code
+yarn纱线纱线纱线纱线纱线纱线纱线 test:code
 
 # TypeScript 类型检查
-yarn test:typecheck
+yarn纱线纱线纱线纱线纱线纱线纱线纱线纱线 test:typecheck
 ```
 
 ## 📁 项目结构
